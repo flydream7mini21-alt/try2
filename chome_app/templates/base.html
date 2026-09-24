@@ -1,0 +1,45 @@
+{% load static %}
+<!doctype html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+
+    <!-- 共通CSS -->
+    <link rel="stylesheet" href="{% static 'css/css1.css' %}">
+
+    {% block extra_css %}{% endblock %}
+
+    <title>メニューカルーセル</title>
+</head>
+
+<body>
+
+    <!-- ★ メニュー開閉ボタン（固定） -->
+    <button id="menuToggle">☰</button>
+
+    <!-- ★ カルーセル（固定・かぶせる） -->
+    <div class="nav-wrapper" id="navWrapper">
+        <div class="circle" id="circle"></div>
+    </div>
+
+    <!-- ★ ページ内容（常に左端） -->
+    <div class="content">
+       
+
+        <div id="page-content">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+    {% block scripts %}
+    
+    <script src="{% static 'js/js1.js' %}"></script>
+    {% endblock %}
+
+
+
+    
+</body>
+</html>
+

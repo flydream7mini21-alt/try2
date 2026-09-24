@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+{% load static %}
+{% load get_item %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/calendar.css' %}">
+<link rel="stylesheet" href="{% static 'css/group_schedule.css' %}">
+
+
+{% endblock %}
+
+{% block content %}
+
+<nav class="top-nav">
+    <div class="nav-left">
+        <a href="/n_home/">ホーム</a>
+        
+        <a href="/calendar/">個人カレンダー</a>
+        
+        <a href="javascript:void(0)" onclick="openScheduleModal()">予定追加</a>
+         <!-- ★ 投票機能を追加 -->
+        <a href="{% url 'poll_list_active' group.id %}">進行中の投票</a>
+        <a href="{% url 'poll_list_finished' group.id %}">終了した投票</a>
+        <a href="{% url 'poll_create' group.id %}">投票作成</a>
+    </div>
+    <div class="nav-right">
+        <a href="/logout/">ログアウト</a>
+    </div>
+</nav>
+
+<!-- ★ モーダル（予定追加） -->
+<div id="scheduleModal" class="modal-overlay">
+    <div class="modal-content">
+        <h2>グループ予定追加</h2>
+
+        <form action="{% url 'add_group_schedule' group.id %}" method="POST">
+            {% csrf_token %}
+
+            <input type="text" name="title" placeholder="予定名を入力" required>
+            <input type="date" name="date" required>
+
+            <div class="time-vertical">
+                <input type="time" name="start_time">
+                <div class="time-separator">から</div>
+                <input type="time" name="end_time">
+            </div>
+
+            <!-- ★ 色選択（安全な書き方） -->
+            <div class="color-select">
+                <label class="color-label">
+                    <input type="radio" name="color" value="#12b88e" class="color-radio">
+                    <div class="color-option" style="background:#12b88e;"></div> 緑
+                </label>
+
+                <label class="color-label">
+                    <input type="radio" name="color" value="#03deee" class="color-radio">
+                    <div class="color-option" style="background:#03deee;"></div> 青
+                </label>
+
+                <label class="color-label">
+                    <input type="radio" name="color" value="#ff6666" class="color-radio">
+                    <div class="color-option" style="background:#ff6666;"></div> 赤
+                </label>
+
+                <label class="color-label">
+                    <input type="radio" name="color" value="#ffcc66" class="color-radio">
+                    <div class="color-option" style="background:#ffcc66;"></div> 黄
+                </label>
+
+                <label class="color-label">
+                    <input type="radio" name="color" value="#9c0488" class="color-radio">
+                    <div class="color-option" style="background:#9c0488;"></div> 紫
+                </label>
+
+                <label class="color-label">
+                    <input type="radio" name="color" value="#ff8800" class="color-radio">
+                    <div class="color-option" style="background:#ff8800;"></div> オレンジ
+                </label>
+            </div>
+
+            <button type="submit">追加</button>
+        </form>
+
+        <button class="close-btn" onclick="closeScheduleModal()">閉じる</button>
+    </div>
+</div>
+
+<!-- ★ 編集モーダル -->
+<div id="editModal" class="modal-overlay" style="display:none;">
+    <div class="modal-content">
+        <h2>予定を編集</h2>
+
+        <form id="editForm" method="POST">
+            {% csrf_token %}
+
+            <input type="text" name="title" id="edit_title" required>
+            <input type="date" name="date" id="edit_date" required>
+
+            <div class="time-vertical">
+                <input type="time" name="start_time" id="edit_start_time">
+                <div class="time-separator">から</div>
+                <input type="time" name="end_time" id="edit_end_time">
+            </div>
+
+            <!-- ★ 色選択（編集用） -->
+            <div class="color-select">
+                <label class="color-label">
+                    <input type="radio" name="color" value="#12b88e" class="color-radio edit-color-radio">
+                    <div class="color-option" style="background:#12b88e;"></div> 緑
+                </label>
+
+                <label class="color-label">
+                    <input type="radio" name="color" value="#03deee" class="color-radio edit-color-radio">
+                    <div class="color-option" style="background:#03deee;"></div> 青
+                </label>
+
+                <label class="color-label">
+                    <input type="radio" name="color" value="#ff6666" class="color-radio edit-color-radio">
+                    <div class="color-option" style="background:#ff6666;"></div> 赤
+                </label>
+
+                <label class="color-label">
+                    <input type="radio" name="color" value="#ffcc66" class="color-radio edit-color-radio">
+                    <div class="color-option" style="background:#ffcc66;"></div> 黄
+                </label>
+
+                <label class="color-label">
+                    <input type="radio" name="color" value="#9c0488" class="color-radio edit-color-radio">
+                    <div class="color-option" style="background:#9c0488;"></div> 紫
+                </label>
+
+                <label class="color-label">
+                    <input type="radio" name="color" value="#ff8800" class="color-radio edit-color-radio">
+                    <div class="color-option" style="background:#ff8800;"></div> オレンジ
+                </label>
+            </div>
+
+            <button type="submit">更新</button>
+        </form>
+
+        <button class="close-btn" onclick="closeEditModal()">閉じる</button>
+    </div>
+</div>
+
+<!-- ★ カレンダー本体 -->
+<div class="calendar-page">
+    <div class="calendar-container">
+
+        <div class="calendar-header">
+            <div class="month-nav">
+                <a href="?year={{ prev_year }}&month={{ prev_month }}" class="nav-btn">先月</a>
+                <a href="?year={{ next_year }}&month={{ next_month }}" class="nav-btn">来月</a>
+            </div>
+            <h2>{{ year }}年 {{ month }}月（{{ group.name }}）</h2>
+        </div>
+
+        {% now "Y-m-d" as today %}
+        <table class="calendar-table">
+            <thead>
+                <tr>
+                    <th class="sun">日</th>
+                    <th>月</th>
+                    <th>火</th>
+                    <th>水</th>
+                    <th>木</th>
+                    <th>金</th>
+                    <th class="sat">土</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for week in days %}
+                    <tr>
+                        {% for day in week %}
+                            <td class="
+                                {% if day.month != month %}other-month{% endif %}
+                                {% if forloop.counter0 == 0 %}sun{% endif %}
+                                {% if forloop.counter0 == 6 %}sat{% endif %}
+                            ">
+                                <div class="day-number{% if day|date:'Y-m-d' == today %} today{% endif %}">{{ day.day }}</div>
+
+                                {% if day in schedule_map %}
+                                    {% for s in schedule_map|get_item:day %}
+                                        <div class="calendar-schedule-item" style="background: {{ s.color }}">
+                                            <div class="schedule-summary">
+                                                {% if s.start_time %}
+                                                    {{ s.start_time|time:"H:i" }}
+                                                {% endif %}
+                                                {% if s.end_time %}
+                                                   - {{ s.end_time|time:"H:i" }}
+                                                {% endif %}
+                                                {{ s.title }}
+                                            </div>
+
+                                            <a href="{% url 'delete_group_schedule' s.id %}" class="delete-btn">削除</a>
+
+                                            <!-- 編集ボタン -->
+                                            <a href="javascript:void(0)" class="edit-btn"
+                                               onclick="openEditModal('{{ s.id }}','{{ s.title }}','{{ s.date }}','{{ s.start_time }}','{{ s.end_time }}','{{ s.color }}')">
+                                                更新
+                                            </a>
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/schedule.js' %}"></script>
+<script src="{% static 'js/group_schedule.js' %}"></script>
+<script src="{% static 'js/js1.js' %}"></script>
+
+{% endblock %}

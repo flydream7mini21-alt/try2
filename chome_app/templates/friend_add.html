@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content%}
+<form method="POST">
+    {% csrf_token %}
+    <input type="text" name="unique_id" placeholder="専用IDを入力">
+    <button type="submit">フレンド追加</button>
+</form>
+{% endblock %}

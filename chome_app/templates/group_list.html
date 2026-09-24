@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+
+/* 全体を中央寄せ */
+.group-list-container {
+    max-width: 700px;
+    margin: 40px auto;
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* タイトル中央 */
+.group-list-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 26px;
+}
+
+/* グループ作成ボタン */
+.create-group-btn {
+    display: block;
+    width: 200px;
+    margin: 0 auto 20px auto;
+    padding: 10px 0;
+    background: #03a9f4;
+    color: #fff;
+    text-align: center;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: 0.2s;
+}
+
+.create-group-btn:hover {
+    background: #0288d1;
+}
+
+/* スクロール可能にする */
+.group-list-scroll {
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+/* グループ一覧 */
+.group-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* グループカード */
+.group-item {
+    background: #f7f7f7;
+    padding: 16px;
+    margin-bottom: 14px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+/* グループ名 */
+.group-item strong {
+    font-size: 20px;
+}
+
+/* ボタン配置（横並び） */
+.group-item a {
+    display: inline-block;
+    padding: 8px 14px;
+    border-radius: 6px;
+    text-decoration: none;
+    color: #fff;
+    font-size: 14px;
+    margin-right: 10px;
+}
+
+/* 詳細ボタン */
+.detail-link {
+    background: #4caf50;
+}
+
+.detail-link:hover {
+    background: #43a047;
+}
+
+/* カレンダーボタン */
+.calendar-link {
+    background: #03a9f4;
+}
+
+.calendar-link:hover {
+    background: #0288d1;
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="group-list-container">
+    <h2>グループ一覧</h2>
+
+    <!-- グループ作成ボタン -->
+    <a href="{% url 'group_calendar_create' %}" class="create-group-btn">
+        ＋ グループを作成
+    </a>
+
+    <hr>
+
+    {% if groups %}
+        <ul class="group-list group-list-scroll">
+            {% for g in groups %}
+                <li class="group-item">
+                    <strong>{{ g.group.name }}</strong>
+
+                    <a href="{% url 'group_detail' g.group.id %}" class="detail-link">
+                        詳細を見る
+                    </a>
+
+                    <a href="{% url 'group_calendar' g.group.id %}" class="calendar-link">
+                        カレンダー
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p style="text-align:center;">参加しているグループはありません。</p>
+    {% endif %}
+</div>
+
+{% endblock %}

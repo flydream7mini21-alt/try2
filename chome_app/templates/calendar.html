@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+{% load static %}
+{% load get_item %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/n_home.css' %}">
+<link rel="stylesheet" href="{% static 'css/calendar.css' %}">
+<link rel="stylesheet" href="{% static 'css/friend_home.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<!-- ★ ナビバー -->
+<nav class="top-nav">
+    <div class="top-right-id">
+      ID: {{ user.unique_id }}  
+    </div>
+    <div class="nav-left">
+        
+        <a href="/n_home/">ホーム</a>
+        <a href="javascript:void(0)" onclick="openScheduleModal()">予定追加</a>
+    </div>
+
+    <li><a href="{% url 'group_list' %}">グループ一覧</a></li>
+    <li><a href="{% url 'group_calendar_create' %}">グループカレンダー作成</a></li>
+
+    <div class="nav-right">
+        <a href="/logout/">ログアウト</a>
+    </div>
+</nav>
+
+<!-- ★ モーダル（予定追加） -->
+<div id="scheduleModal" class="modal-overlay">
+    <div class="modal-content">
+        <h2>予定追加</h2>
+
+        <form action="{% url 'add_schedule' %}" method="POST">
+            {% csrf_token %}
+            <input type="text" name="title" placeholder="予定名" required>
+            <input type="date" name="date" required>
+            <div class="time-vertical">
+                <input type="time" name="start_time" id="start_time">
+                <div class="time-separator">から</div>
+                <input type="time" name="end_time" id="end_time">
+            </div>
+            <button type="submit">追加</button>
+        </form>
+
+        <button class="close-btn" onclick="closeScheduleModal()">閉じる</button>
+    </div>
+</div>
+
+<!-- ★ カレンダー本体 -->
+<div class="calendar-page">
+    <div class="calendar-container">
+
+        <div class="calendar-header">
+            <div class="month-nav">
+                <a href="?year={{ prev_year }}&month={{ prev_month }}" class="nav-btn">先月</a>
+                <a href="?year={{ next_year }}&month={{ next_month }}" class="nav-btn">来月</a>
+            </div>
+            <h2>{{ year }}年 {{ month }}月</h2>
+        </div>
+
+        {% now "Y-m-d" as today %}
+        <table class="calendar-table">
+            <thead>
+                <tr>
+                    <th class="sun">日</th>
+                    <th>月</th>
+                    <th>火</th>
+                    <th>水</th>
+                    <th>木</th>
+                    <th>金</th>
+                    <th class="sat">土</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for week in days %}
+                    <tr>
+                        {% for day in week %}
+                            <td class="
+                                {% if day.month != month %}other-month{% endif %}
+                                {% if forloop.counter0 == 0 %}sun{% endif %}
+                                {% if forloop.counter0 == 6 %}sat{% endif %}
+                            ">
+                                <div class="day-number{% if day|date:'Y-m-d' == today %} today{% endif %}">{{ day.day }}</div>
+
+                                {% if day in schedule_map %}
+                                    {% for s in schedule_map|get_item:day %}
+
+                                        <div class="calendar-schedule-item">
+
+                                            <!-- 概要（クリックで開閉） -->
+                                            <div class="schedule-summary" onclick="toggleDetail({{ s.id }})">
+                                                {% if s.start_time %}
+                                                    {{ s.start_time|time:"H:i" }}
+                                                {% endif %}
+                                                {% if s.end_time %}
+                                                   - {{ s.end_time|time:"H:i" }}
+                                                {% endif %}
+                                                {{ s.title }}
+                                            </div>
+                                            
+
+
+                                            <!-- 詳細（初期は非表示） -->
+                                            <div id="detail-{{ s.id }}" class="schedule-detail">
+                                                <div class="schedule-actions">
+                                                    <a href="javascript:void(0)" class="update-btn"
+                                                       onclick="editSchedule('{{ s.id }}', '{{ s.title }}', '{{ s.date }}', '{{ s.start_time }}', '{{ s.end_time }}')">
+                                                        更新
+                                                    </a>
+                                                    <a href="{% url 'delete_schedule' s.id %}" class="delete-btn">削除</a>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                    {% endfor %}
+                                {% endif %}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/js1.js' %}"></script>
+<script src="{% static 'js/schedule.js' %}"></script>
+{% endblock %}

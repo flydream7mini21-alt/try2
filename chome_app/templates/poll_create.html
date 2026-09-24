@@ -1,0 +1,289 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+
+/* カード風中央寄せ */
+.poll-create-container {
+    max-width: 700px;
+    margin: 40px auto;
+    padding: 25px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.poll-create-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* ラベル */
+.poll-create-container label {
+    display: block;
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+/* 入力欄 */
+.poll-create-container input[type="text"],
+.poll-create-container input[type="datetime-local"],
+.poll-create-container textarea {
+    width: 100%;
+    padding: 10px;
+    margin-top: 6px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+.poll-create-container textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+/* ボタン */
+.add-btn {
+    margin-top: 10px;
+    padding: 8px 12px;
+    background: #4caf50;
+    color: #fff;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+}
+.add-btn:hover { background: #43a047; }
+
+.remove-btn {
+    padding: 8px 12px;
+    background: #d9534f;
+    color: #fff;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+}
+.remove-btn:hover { background: #c9302c; }
+
+.move-btn {
+    padding: 8px 12px;
+    background: #03a9f4;
+    color: #fff;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+}
+.move-btn:hover { background: #0288d1; }
+
+/* 作成ボタン */
+.create-btn {
+    width: 100%;
+    margin-top: 25px;
+    padding: 12px 0;
+    background: #03a9f4;
+    color: #fff;
+    border-radius: 8px;
+    border: none;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+}
+.create-btn:hover { background: #0288d1; }
+
+/* アコーディオン */
+.accordion-header {
+    background: #f5f5f5;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.accordion-content {
+    display: none;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-top: 5px;
+}
+
+.accordion-content.active {
+    display: block;
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+
+<nav class="top-nav">
+    <div class="nav-left">
+        <a href="/n_home/">ホーム</a>
+        <a href="/calendar/">個人カレンダー</a>
+        <a href="{% url 'poll_list_active' group.id %}">進行中の投票</a>
+        <a href="{% url 'poll_list_finished' group.id %}">終了した投票</a>
+    </div>
+    <div class="nav-right">
+        <a href="/logout/">ログアウト</a>
+    </div>
+</nav>
+
+<div class="poll-create-container">
+    <h2>投票作成</h2>
+
+    <form action="{% url 'poll_create' group.id %}" method="POST">
+        {% csrf_token %}
+
+        <!-- 投票タイトル -->
+        <label>投票タイトル</label>
+        <textarea name="title" rows="2" placeholder="投票タイトル" required></textarea>
+
+        <!-- 投票期間 -->
+        <label>開始日時</label>
+        <input type="datetime-local" name="start_at" required>
+
+        <label>終了日時</label>
+        <input type="datetime-local" name="end_at" required>
+
+        <!-- 質問アコーディオン -->
+        <label>質問（アコーディオン形式）</label>
+
+        <div id="accordion-area">
+
+            <!-- 初期質問 -->
+            <div class="accordion-item" data-index="0">
+                <div class="accordion-header">質問 1 / 1</div>
+
+                <div class="accordion-content active">
+                    <textarea name="questions[]" placeholder="質問内容" rows="3" required></textarea>
+
+                    <select name="answer_type[]" class="answer-type" onchange="toggleChoiceArea(this)">
+                        <option value="choice">選択式</option>
+                        <option value="text">記述式</option>
+                    </select>
+
+                    <div class="choice-area">
+                        <input type="text" name="choices_0[]" placeholder="選択肢1">
+                        <input type="text" name="choices_0[]" placeholder="選択肢2">
+                        <button type="button" class="add-btn" onclick="addChoice(this)">＋ 選択肢追加</button>
+                    </div>
+
+                    <div style="margin-top:10px; display:flex; gap:10px;">
+                        <button type="button" class="add-btn" onclick="addAccordion()">＋ 質問追加</button>
+                        <button type="button" class="remove-btn" onclick="removeAccordion(this)">− 質問削除</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <button type="submit" class="create-btn">投票を作成</button>
+    </form>
+</div>
+
+<script>
+let questionIndex = 1;
+
+/* アコーディオン追加 */
+function addAccordion() {
+    const area = document.getElementById("accordion-area");
+
+    const item = document.createElement("div");
+    item.className = "accordion-item";
+    item.dataset.index = questionIndex;
+
+    item.innerHTML = `
+        <div class="accordion-header">質問 ${questionIndex + 1} / ${questionIndex + 1}</div>
+
+        <div class="accordion-content">
+            <textarea name="questions[]" placeholder="質問内容" rows="3" required></textarea>
+
+            <select name="answer_type[]" class="answer-type" onchange="toggleChoiceArea(this)">
+                <option value="choice">選択式</option>
+                <option value="text">記述式</option>
+            </select>
+
+            <div class="choice-area">
+                <input type="text" name="choices_${questionIndex}[]" placeholder="選択肢1">
+                <input type="text" name="choices_${questionIndex}[]" placeholder="選択肢2">
+                <button type="button" class="add-btn" onclick="addChoice(this)">＋ 選択肢追加</button>
+            </div>
+
+            <div style="margin-top:10px; display:flex; gap:10px;">
+                <button type="button" class="add-btn" onclick="addAccordion()">＋ 質問追加</button>
+                <button type="button" class="remove-btn" onclick="removeAccordion(this)">− 質問削除</button>
+            </div>
+        </div>
+    `;
+
+    area.appendChild(item);
+
+    updateAccordionNumbers();
+    questionIndex++;
+}
+
+/* アコーディオン削除 */
+function removeAccordion(btn) {
+    const item = btn.closest(".accordion-item");
+    item.remove();
+    updateAccordionNumbers();
+}
+
+/* アコーディオン番号更新 */
+function updateAccordionNumbers() {
+    const items = document.querySelectorAll(".accordion-item");
+    items.forEach((item, i) => {
+        const header = item.querySelector(".accordion-header");
+        header.textContent = `質問 ${i + 1} / ${items.length}`;
+    });
+}
+
+/* アコーディオン開閉 */
+document.addEventListener("click", function(e) {
+    if (e.target.classList.contains("accordion-header")) {
+        const content = e.target.nextElementSibling;
+        content.classList.toggle("active");
+    }
+});
+
+/* 質問内容では Enter によるフォーカス移動を止めて改行する */
+document.addEventListener("keydown", function(e) {
+    if (e.key === "Enter" && e.target.matches('textarea[name="title"], textarea[name="questions[]"]')) {
+        e.stopPropagation();
+    }
+});
+
+/* 選択肢追加（削除ボタン付き） */
+function addChoice(btn) {
+    const area = btn.parentElement;
+    const input = document.createElement("input");
+    input.type = "text";
+    input.placeholder = "選択肢";
+    input.name = area.querySelector("input").name;
+
+    const wrapper = document.createElement("div");
+    wrapper.style.display = "flex";
+    wrapper.style.gap = "10px";
+    wrapper.style.marginTop = "6px";
+
+    wrapper.appendChild(input);
+
+    const removeBtn = document.createElement("button");
+    removeBtn.type = "button";
+    removeBtn.textContent = "−";
+    removeBtn.className = "remove-btn";
+    removeBtn.onclick = () => wrapper.remove();
+
+    wrapper.appendChild(removeBtn);
+
+    area.insertBefore(wrapper, btn);
+}
+
+/* 回答形式切替 */
+function toggleChoiceArea(select) {
+    const choiceArea = select.parentElement.querySelector(".choice-area");
+    choiceArea.style.display = (select.value === "choice") ? "block" : "none";
+}
+</script>
+
+{% endblock %}

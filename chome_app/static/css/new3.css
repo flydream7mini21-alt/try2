@@ -1,0 +1,208 @@
+/* =========================
+   Reset
+========================= */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    font-family:"Yu Gothic","Meiryo",sans-serif;
+    background:#f6fbfc;
+    overflow:hidden;
+}
+
+/* =========================
+   Layout
+========================= */
+
+body{
+    display:flex;
+    height:100vh;
+}
+
+.nav-wrapper{
+    width:360px;
+    height:100vh;
+    overflow:hidden;
+    position:relative;
+    background:rgba(255,255,255,.65);
+    backdrop-filter:blur(20px);
+    border-right:1px solid rgba(255,255,255,.5);
+    box-shadow:5px 0 20px rgba(0,0,0,.08);
+    transition:.45s ease;
+}
+
+.circle{
+    position:relative;
+    width:100%;
+    height:100%;
+}
+
+/* ★ content の初期位置（nav-wrapper の幅分右へ） */
+.content{
+    flex:1;
+    padding:50px;
+    overflow:auto;
+    margin-left:360px !important;   /* ★ nav-wrapper の幅 */
+    transition:.45s;
+    text-align:left;                /* ★ 左寄せを追加 */
+}
+
+/* ★ page-wrapper のテキストも左寄せ */
+.page-wrapper{
+    text-align:left;
+}
+
+/* =========================
+   Background
+========================= */
+
+body{
+    background:
+        radial-gradient(circle at 20% 20%, rgba(18,184,142,.30), transparent 40%),
+        radial-gradient(circle at 80% 10%, rgba(3,222,238,.25), transparent 35%),
+        linear-gradient(180deg, #ffffff, #f5ffff, #e8ffff);
+}
+
+/* =========================
+   Menu Card
+========================= */
+
+.item{
+    position:absolute;
+    left:35px;
+    width:260px;
+    height:78px;
+    display:flex;
+    align-items:center;
+    padding:0 20px;
+    border-radius:22px;
+    background:rgba(255,255,255,.65);
+    backdrop-filter:blur(15px);
+    border:1px solid rgba(255,255,255,.7);
+    box-shadow:0 10px 25px rgba(0,0,0,.08);
+    transition:all .35s ease;
+    cursor:pointer;
+    overflow:hidden;
+}
+
+/* 中央カード */
+.item.active{
+    width:300px;
+    height:110px;
+    left:15px;
+    padding:0 28px;
+    border-radius:28px;
+    color:#fff;
+    background:linear-gradient(135deg, #12b88e, #03deee);
+    box-shadow:0 20px 40px rgba(3,222,238,.35);
+    z-index:100;
+    animation:glow 2s infinite;
+}
+
+/* Hover */
+.item:hover{
+    transform:translateX(8px) scale(1.03);
+    box-shadow:0 20px 35px rgba(18,184,142,.18);
+}
+
+/* Icon */
+.icon{
+    width:52px;
+    height:52px;
+    border-radius:50%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:linear-gradient(135deg, #12b88e, #03deee);
+    color:white;
+    font-size:24px;
+    margin-right:18px;
+}
+
+/* Content */
+#title{
+    font-size:60px;
+    font-weight:bold;
+    color:#145366;
+    margin-bottom:25px;
+}
+
+.content p{
+    font-size:20px;
+    line-height:2;
+    color:#4b6570;
+}
+
+/* Button */
+button{
+    padding:15px 25px;
+    border:none;
+    border-radius:15px;
+    background:linear-gradient(135deg, #12b88e, #03deee);
+    color:white;
+    cursor:pointer;
+    transition:.3s;
+}
+
+button:hover{
+    transform:translateY(-4px);
+}
+
+/* Animation */
+@keyframes glow{
+    0%{ box-shadow:0 0 10px #03deee; }
+    50%{ box-shadow:0 0 35px #03deee; }
+    100%{ box-shadow:0 0 10px #03deee; }
+}
+
+/* =========================
+   Menu Toggle Button
+========================= */
+
+#menuToggle{
+    position:fixed;
+    top:20px;
+    left:20px;
+    width:80px;
+    height:80px;
+    border:none;
+    border-radius:20px;
+    background:linear-gradient(180deg,#18c9b5,#08c4de);
+    color:white;
+    font-size:42px;
+    cursor:pointer;
+    z-index:9999;
+    box-shadow:0 10px 25px rgba(0,0,0,.25);
+    transition:.3s;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:0;
+    line-height:1;
+}
+
+#menuToggle:hover{
+    transform:scale(1.08);
+}
+
+/* =========================
+   Navigation Hide
+========================= */
+
+.nav-wrapper.hide{
+    transform:translateX(-360px);
+}
+
+/* メニュー閉時 */
+.nav-wrapper.hide ~ .content{
+    margin-left:0 !important;
+    padding-left:20px;      /* 左端へ */
+}

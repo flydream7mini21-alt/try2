@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+
+.poll-list-container {
+    max-width: 700px;
+    margin: 40px auto;
+    padding: 25px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.poll-list-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.poll-item {
+    background: #f7f7f7;
+    padding: 16px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.poll-title {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.poll-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.answer-status {
+    flex-shrink: 0;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.answer-status.answered {
+    font-size: 20px;
+    color: #16803c;
+}
+
+.answer-status.unanswered {
+    font-size: 20px;
+    color: #d9534f;
+}
+
+.poll-period {
+    margin-top: 6px;
+    font-size: 14px;
+    color: #555;
+}
+
+.poll-remaining {
+    margin-top: 6px;
+    font-size: 17px;
+    color: #d9534f;
+}
+
+.answer-btn {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 8px 14px;
+    background: #03a9f4;
+    color: #fff;
+    border-radius: 6px;
+    text-decoration: none;
+}
+
+.answer-btn:hover {
+    background: #0288d1;
+}
+
+/* ★ 削除ボタン */
+.delete-btn {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 8px 14px;
+    background: #e53935;
+    color: #fff;
+    border-radius: 6px;
+    text-decoration: none;
+    margin-left: 10px;
+}
+
+.delete-btn:hover {
+    background: #c62828;
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+
+<nav class="top-nav">
+    <div class="nav-left">
+        <a href="/n_home/">ホーム</a>
+        <a href="/calendar/">個人カレンダー</a>
+        <a href="{% url 'group_calendar' group.id %}">グループカレンダー</a>
+        <a href="{% url 'poll_create' group.id %}">投票作成</a>
+        <a href="{% url 'poll_list_finished' group.id %}">終了した投票</a>
+    </div>
+    <div class="nav-right">
+        <a href="/logout/">ログアウト</a>
+    </div>
+</nav>
+
+<div class="poll-list-container">
+    <h2>進行中の投票</h2>
+
+    {% if polls %}
+        {% for p in polls %}
+            <div class="poll-item">
+                <div class="poll-title-row">
+                    <div class="poll-title">{{ p.title }}</div>
+                    {% if p.has_answered %}
+                        <span class="answer-status answered">回答済み</span>
+                    {% else %}
+                        <span class="answer-status unanswered">未回答</span>
+                    {% endif %}
+                </div>
+
+                <div class="poll-period">
+                    開始: {{ p.start_at }}  
+                    <br>
+                    終了: {{ p.end_at }}
+                </div>
+
+                <div class="poll-remaining">
+                    締め切りまで：{{ p.remaining_time }}
+                </div>
+
+                
+                <a href="{% url 'poll_answer' p.group.id p.id %}" class="answer-btn">回答する</a>
+                
+                
+
+
+                <!-- ★ 削除ボタン -->
+                <form action="{% url 'poll_delete' p.id %}" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="delete-btn">削除</button>
+                </form>
+
+            </div>
+        {% endfor %}
+    {% else %}
+        <p style="text-align:center;">進行中の投票はありません。</p>
+    {% endif %}
+</div>
+
+{% endblock %}

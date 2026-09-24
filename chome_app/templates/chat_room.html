@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+{% load static %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/friend_home.css' %}">
+<link rel="stylesheet" href="{% static 'css/chat_room.css' %}?v=5">
+<style>
+/* ★ 右クリックメニュー */
+.context-menu {
+    position: absolute;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 8px 0;
+    width: 120px;
+    display: none;
+    z-index: 9999;
+}
+
+.context-menu-item {
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+.context-menu-item:hover {
+    background: #eee;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="top-right-id">
+    ID: {{ user.unique_id }}
+
+    <a href="{% url 'friend_request' %}" class="jump-btn">フレンド追加</a>
+    <a href="{% url 'friend_list' %}" class="jump-btn">フレンド一覧</a>
+    <a href="#group-list" class="jump-btn">グループ一覧</a>
+    <a href="{% url 'group_create' %}" class="jump-btn">グループ作成</a>
+    <a href="{% url 'friend_profile' %}" class="jump-btn">プロフィール</a>
+</div>
+
+<div class="chat-container">
+
+    <!-- ★ 会話欄 -->
+    <div class="chat-box">
+        {% for m in messages %}
+            {% if m.sender == user %}
+                <!-- ★ 自分のメッセージ（右側） -->
+                <p class="chat-message chat-right my-message" data-id="{{ m.id }}">
+                    <strong>{{ m.sender.username }}:</strong> {{ m.text }}
+
+                    {% if m.file %}
+                        {% with m.file.url|lower as url %}
+                            {% if ".jpg" in url or ".jpeg" in url or ".png" in url or ".gif" in url %}
+                                <img src="{{ m.file.url }}" class="chat-image">
+                            {% else %}
+                                <a href="{{ m.file.url }}" download class="chat-file">
+                                    {{ m.file.name }}
+                                </a>
+                            {% endif %}
+                        {% endwith %}
+                    {% endif %}
+                </p>
+
+            {% else %}
+                <!-- ★ 相手のメッセージ（左側） -->
+                <p class="chat-message chat-left">
+                    <strong>{{ m.sender.username }}:</strong> {{ m.text }}
+
+                    {% if m.file %}
+                        {% with m.file.url|lower as url %}
+                            {% if ".jpg" in url or ".jpeg" in url or ".png" in url or ".gif" in url %}
+                                <img src="{{ m.file.url }}" class="chat-image">
+                            {% else %}
+                                <a href="{{ m.file.url }}" download class="chat-file">
+                                    {{ m.file.name }}
+                                </a>
+                            {% endif %}
+                        {% endwith %}
+                    {% endif %}
+                </p>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+    <!-- ★ 右クリックメニュー -->
+    <div id="context-menu" class="context-menu">
+        <div class="context-menu-item" id="delete-btn">削除</div>
+    </div>
+
+    <!-- ★ 入力欄 -->
+    <form method="POST" enctype="multipart/form-data" class="chat-input-area" action="{% url 'send_message' friend.id %}">
+        {% csrf_token %}
+
+        <div id="message-input-box" class="message-input-box">
+            <div id="image-preview-area"></div>
+            <div id="message-text" contenteditable="true" class="message-text"></div>
+        </div>
+
+        <input type="hidden" name="text" id="hidden-text">
+        <input type="file" name="file" id="hidden-file" style="display:none;">
+        <button type="submit">送信</button>
+    </form>
+
+</div>
+
+<script>
+const messageText = document.getElementById("message-text");
+const hiddenText = document.getElementById("hidden-text");
+
+// ★ contenteditable → hidden に送信
+document.querySelector("form").addEventListener("submit", () => {
+    hiddenText.value = messageText.innerText;
+});
+
+/* ============================
+   ★ 右クリックメニュー処理
+   ============================ */
+const contextMenu = document.getElementById("context-menu");
+let targetMessageId = null;
+
+// 自分のメッセージだけ右クリック可能
+document.querySelectorAll(".my-message").forEach(msg => {
+    msg.addEventListener("contextmenu", (e) => {
+        e.preventDefault();
+
+        targetMessageId = msg.dataset.id;
+
+        contextMenu.style.left = e.pageX + "px";
+        contextMenu.style.top = e.pageY + "px";
+        contextMenu.style.display = "block";
+    });
+});
+
+// 画面クリックでメニューを閉じる
+document.addEventListener("click", () => {
+    contextMenu.style.display = "none";
+});
+
+// 削除ボタン
+document.getElementById("delete-btn").addEventListener("click", () => {
+    if (targetMessageId) {
+        window.location.href = `/delete_message/${targetMessageId}/`;
+    }
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% load static%}
+{% block extra_css %}
+<style>
+	.mail-home {
+		width: min(920px, calc(100% - 48px));
+		margin: 0 auto;
+		padding: 56px 0 72px;
+	}
+
+	.mail-home-heading {
+		margin: 0 0 10px;
+		color: #17252b;
+		font-size: clamp(28px, 4vw, 42px);
+		letter-spacing: 0;
+	}
+
+	.mail-home-lead {
+		margin: 0 0 34px;
+		color: #53656b;
+		font-size: 16px;
+	}
+
+	.mail-service-grid {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 18px;
+	}
+
+	.mail-service-button {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		min-height: 112px;
+		padding: 24px 28px;
+		border-radius: 8px;
+		color: #ffffff;
+		font-size: 22px;
+		font-weight: 700;
+		text-decoration: none;
+		box-shadow: 0 10px 24px rgba(23, 37, 43, 0.14);
+		transition: transform 160ms ease, box-shadow 160ms ease;
+	}
+
+	.mail-service-button::after {
+		content: "↗";
+		font-size: 28px;
+		line-height: 1;
+	}
+
+	.mail-service-button:hover,
+	.mail-service-button:focus-visible {
+		transform: translateY(-3px);
+		box-shadow: 0 14px 28px rgba(23, 37, 43, 0.22);
+	}
+
+	.mail-service-button:focus-visible {
+		outline: 3px solid #17252b;
+		outline-offset: 3px;
+	}
+
+	.mail-service-gmail {
+		background: #d93025;
+	}
+
+	.mail-service-outlook {
+		background: #0078d4;
+	}
+
+	.mail-service-discord {
+		background: #5865f2;
+	}
+
+	.mail-service-line {
+		background: #06c755;
+	}
+
+	@media (max-width: 640px) {
+		.mail-home {
+			width: min(100% - 28px, 480px);
+			padding-top: 36px;
+		}
+
+		.mail-service-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="mail-home">
+	<h1 class="mail-home-heading">メール HOME</h1>
+	<p class="mail-home-lead">よく使うサービスを選択してください</p>
+
+	<nav class="mail-service-grid" aria-label="メールサービス">
+		<a class="mail-service-button mail-service-gmail"
+		   href="https://mail.google.com/" target="_blank" rel="noopener noreferrer">
+			<span>GMAIL</span>
+		</a>
+		<a class="mail-service-button mail-service-outlook"
+		   href="mailto:admin@example.com" target="_blank" rel="noopener noreferrer">
+			<span>OUTLOOK (少し待ち時間)</span>
+		</a>
+		<a class="mail-service-button mail-service-discord"
+		   href="https://discord.com/app" target="_blank" rel="noopener noreferrer">
+			<span>DISCORD</span>
+		</a>
+		<a class="mail-service-button mail-service-line"
+		   href="https://line.me/" target="_blank" rel="noopener noreferrer">
+			<span>LINE</span>
+		</a>
+	</nav>
+</main>
+
+{% endblock %}

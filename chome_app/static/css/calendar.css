@@ -1,0 +1,263 @@
+/* =========================
+   ナビバー（旧CSS）
+========================= */
+.top-nav {
+    width: calc(100% - 120px); /* 左のメニュー分を引く */
+    margin-left: 120px;        /* メニューアイコンの幅＋余白 */
+    background: #145366;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #fff;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.top-nav a {
+    color: #fff;
+    text-decoration: none;
+    margin-right: 20px;
+    font-size: 16px;
+}
+
+.top-nav a:hover {
+    opacity: 0.7;
+}
+
+/* =========================
+   モーダル（旧CSS）
+========================= */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.4);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.modal-content {
+    background: #fff;
+    padding: 30px;
+    width: 400px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    animation: popup 0.3s ease;
+}
+
+@keyframes popup {
+    from { transform: scale(0.8); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+}
+
+.modal-content input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 12px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+}
+
+/* ★ 時間入力欄だけ幅を縮める（～を中央に見せるための修正） */
+.modal-content input[type="time"] {
+    width: 140px;
+}
+
+.modal-content button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #12b88e, #03deee);
+    color: #fff;
+    cursor: pointer;
+}
+
+.close-btn {
+    margin-top: 10px;
+    width: 100%;
+    padding: 10px;
+    background: #ccc;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+/* =========================
+   カレンダー（必要部分だけ追加）
+========================= */
+
+.calendar-page {
+    width: 100%;
+}
+
+.calendar-container {
+    background: #fff;
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.08);
+    width: 100%;
+}
+
+.calendar-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.calendar-table th,
+.calendar-table td {
+    border: 1px solid #d5d5d5;
+    width: 14.28%;
+    height: 100px;
+    padding: 8px;
+    vertical-align: top;
+}
+
+.day-number {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.day-number.today {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border: 3px solid #e53935;
+    border-radius: 50%;
+    color: #e53935;
+    box-sizing: border-box;
+}
+
+.sun { background: #ffe5e5; }
+.sat { background: #e9f0ff; }
+.other-month { color: #aaa; }
+
+.calendar-schedule-item {
+    margin-top: 5px;
+    padding: 4px 6px;
+    background: #ffe4b5;
+    border-radius: 6px;
+    font-size: 13px;
+}
+
+.schedule-summary {
+    cursor: pointer;
+    padding: 4px;
+    background: #ffe4b5;
+    border-radius: 4px;
+}
+
+.schedule-detail {
+    display: none;
+    background: #fff7e6;
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 6px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+
+.schedule-actions {
+    margin-top: 6px;
+    display: flex;
+    gap: 4px;
+    flex-wrap: nowrap;
+}
+
+.update-btn,
+.delete-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3px 6px;
+    font-size: 12px;
+    border-radius: 4px;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.update-btn {
+    background: #cce5ff;
+    color: #004085;
+    border: 1px solid #b8daff;
+}
+
+.delete-btn {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* =========================
+   Calendar Navbar（修正版）
+========================= */
+.calendar-nav {
+    width: 100%;
+    background: #145366;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #fff;
+    border-radius: 10px;
+    margin-top: 80px;
+    margin-bottom: 20px;
+}
+
+.calendar-nav a {
+    color: #fff;
+    text-decoration: none;
+    margin-right: 20px;
+    font-size: 16px;
+}
+
+.calendar-nav a:hover {
+    opacity: 0.7;
+}
+
+/* =========================
+   Month Navigation Buttons
+========================= */
+
+.month-nav {
+    display: flex;
+    gap: 10px;
+}
+
+.nav-btn {
+    display: inline-block;
+    padding: 8px 18px;
+    background: #e5e5e5;
+    color: #333;
+    border-radius: 10px;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: bold;
+    border: 1px solid #d0d0d0;
+    transition: all .25s ease;
+}
+
+.nav-btn:hover {
+    background: #d8d8d8;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,.15);
+}
+
+.nav-btn:active {
+    transform: scale(0.96);
+}
+
+/* ◀表示 */
+.schedule-arrow {
+    margin-top: 4px;
+    font-size: 16px;
+    color: #145366;
+    user-select: none;
+}
+

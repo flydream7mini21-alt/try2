@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/friend_home.css' %}">
+<link rel="stylesheet" href="{% static 'css/profile.css' %}">
+<link href="https://fonts.googleapis.com/css2?family=Alex+Brush&display=swap" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+
+<!-- ★ 右上ID表示 -->
+<div class="top-right-id">
+    ID: {{ user.unique_id }}
+    <a href="{% url 'friend_home' %}#add-friend" class="jump-btn">HOME</a>
+    <a href="{% url 'friend_request' %}" class="jump-btn">フレンド追加</a>
+    <a href="{% url 'friend_list' %}" class="jump-btn">フレンド一覧</a>
+    <a href="#group-list" class="jump-btn">グループ一覧</a>
+    <a href="{% url 'group_create' %}" class="jump-btn">グループ作成</a>
+    <a href="{% url 'friend_profile' %}" class="jump-btn">プロフィール</a>
+</div>
+
+<h2>プロフィール設定</h2>
+
+<div class="profile-wrapper">
+
+    <!-- 左：画像アップロードフォーム -->
+    <div class="profile-left">
+
+        <!-- 背景画像アップロード -->
+        <form method="POST" enctype="multipart/form-data" action="{% url 'update_profile_bg' %}">
+            {% csrf_token %}
+            <label>背景画像を選択：</label>
+            <input type="file" id="bgInput" name="profile_bg" accept="image/*">
+            <button type="submit">保存</button>
+        </form>
+
+        <!-- 丸型アイコンアップロード -->
+        <form method="POST" enctype="multipart/form-data" action="{% url 'update_profile_icon' %}">
+            {% csrf_token %}
+            <label>プロフィールアイコン：</label>
+            <input type="file" id="iconInput" name="profile_icon" accept="image/*">
+            <button type="submit">保存</button>
+        </form>
+
+    </div>
+
+    <!-- 右：プレビュー枠まとめ -->
+    <div class="preview-row">
+
+        <!-- 背景画像プレビュー -->
+        <div class="preview-bg-area">
+            <h3>背景画像プレビュー</h3>
+            <div class="preview-bg-box" id="previewBgBox"></div>
+        </div>
+
+        <!-- プロフィールアイコンプレビュー -->
+        <div class="preview-icon-area">
+            <h3>アイコンプレビュー</h3>
+            <div class="preview-icon-box">
+                <img id="previewIconBox" style="display:none;">
+            </div>
+        </div>
+
+        <!-- ★ メッセージ入力欄（message-box 適用） -->
+        <div class="preview-message-area">
+            <h3>メッセージ</h3>
+
+            <div class="message-box">
+                <form method="POST" action="{% url 'update_profile_message' %}">
+                    {% csrf_token %}
+
+                    <!-- メッセージ本文 -->
+                    <textarea name="profile_message" class="message-input"
+                              placeholder="メッセージを書いてください">{{ user.profile_message }}</textarea>
+
+                    <!-- ★ 文字色選択 -->
+                    <label>文字色：</label>
+                    <input type="color" name="message_color" value="{{ user.message_color }}">
+
+                    <!-- ★ フォント選択 -->
+                    <label>フォント：</label>
+                    <select name="message_font">
+                        <option value="brush" {% if user.message_font == "brush" %}selected{% endif %}>Alex Brush</option>
+                        <option value="normal" {% if user.message_font == "normal" %}selected{% endif %}>標準フォント</option>
+                    </select>
+
+                    <button type="submit">保存</button>
+                </form>
+            </div>
+
+            <!-- ロゴ風プレビュー -->
+            <p class="signature {{ user.message_font }}" id="signaturePreview"
+               style="color: {{ user.message_color }};">
+                {{ user.profile_message|default:"" }}
+            </p>
+        </div>
+
+    </div>
+
+</div>
+
+<hr>
+
+<!-- ★ 保存後のプロフィールカード（本番表示） -->
+<div class="profile-card"
+     style="
+        {% if user.profile_bg %}
+            background-image: url('{{ user.profile_bg.url }}');
+        {% else %}
+            background-color: #ddd;
+        {% endif %}
+     ">
+
+    {% if user.profile_icon %}
+        <img src="{{ user.profile_icon.url }}" class="profile-icon">
+    {% endif %}
+
+    <div class="profile-info">
+        <h3>{{ user.username }}</h3>
+
+        {% if user.profile_message %}
+            <p class="signature {{ user.message_font }}" style="color: {{ user.message_color }};">
+                {{ user.profile_message }}
+            </p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- ★ 即時プレビュー用 JavaScript -->
+<script>
+    // 背景画像プレビュー
+    document.getElementById("bgInput").addEventListener("change", function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const box = document.getElementById("previewBgBox");
+            box.style.backgroundImage = "url('" + event.target.result + "')";
+            box.style.backgroundSize = "100% 100%";
+            box.style.backgroundRepeat = "no-repeat";
+            box.style.backgroundPosition = "center";
+        };
+        reader.readAsDataURL(file);
+    });
+
+    // アイコンプレビュー
+    document.getElementById("iconInput").addEventListener("change", function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const icon = document.getElementById("previewIconBox");
+            icon.src = event.target.result;
+            icon.style.display = "block";
+            icon.classList.add("preview-icon");
+        };
+        reader.readAsDataURL(file);
+    });
+
+    // メッセージのリアルタイム反映
+    document.querySelector(".message-input").addEventListener("input", function(e) {
+        document.getElementById("signaturePreview").textContent = e.target.value;
+    });
+</script>
+
+{% endblock %}

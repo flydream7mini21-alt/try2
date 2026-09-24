@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/user_setting.css' %}">
+<style>
+   .settings-wrapper {
+    width: 100%;
+    max-width: 480px;
+    margin: 40px auto;
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+.settings-title {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 25px;
+    color: #145366;
+}
+
+.settings-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.settings-label {
+    font-size: 15px;
+    font-weight: bold;
+    color: #145366;
+}
+
+.settings-input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    font-size: 15px;
+}
+
+.settings-file {
+    padding: 8px;
+    font-size: 14px;
+}
+
+.settings-submit {
+    margin-top: 20px;
+    padding: 12px;
+    background: linear-gradient(135deg, #12b88e, #03deee);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.settings-submit:hover {
+    opacity: 0.9;
+}
+
+.icon-section {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.user-icon-preview {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.password-box {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.pw-btn {
+    padding: 10px 14px;
+    background: #145366;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.pw-btn:hover {
+    opacity: 0.85;
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="settings-wrapper">
+
+    <h2 class="settings-title">ユーザー設定</h2>
+
+    <form method="POST" enctype="multipart/form-data" class="settings-form">
+        {% csrf_token %}
+
+
+        <label class="settings-label">ユーザー名</label>
+        <input type="text" name="username" value="{{ user.username }}" class="settings-input">
+
+        <label class="settings-label">メールアドレス</label>
+        <input type="email" name="email" value="{{ user.email }}" class="settings-input">
+
+        <label class="settings-label">パスワード変更</label>
+
+        <!-- ★ パスワード入力欄 -->
+        <div class="password-box">
+            <input type="password" id="passwordField" name="password" class="settings-input">
+
+            <!-- 自動生成 -->
+            <button type="button" class="pw-btn" onclick="generatePassword()">自動生成</button>
+
+            <!-- 表示切替 -->
+            <button type="button" class="pw-btn" onclick="togglePassword()">👁</button>
+        </div>
+        <label class="settings-label">専用ID</label>
+        <input type="text" name="unique_id" value="{{ user.unique_id }}" class="settings-input">
+
+
+
+        <button type="submit" class="settings-submit">更新する</button>
+    </form>
+
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/setting.js' %}"></script>
+<script src="{% static 'js/js1.js' %}"></script>
+<script src="{% static 'js/n_home.js' %}"></script>
+{% endblock %}

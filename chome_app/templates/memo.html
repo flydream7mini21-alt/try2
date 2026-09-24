@@ -1,0 +1,129 @@
+
+
+{%load static%}
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<link href="./css/memo.css" rel="stylesheet">
+<title>マイメモ</title>
+</head>
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/memo.css' %}">
+{% endblock %}
+
+<body>
+  <nav class="breadcrumb">
+  <a href="./home.html" style="font-size: 20px; color:rgb(0, 0, 0);">Home</a> ＞
+  
+  <span style="font-size: 20px;color:rgb(255, 255, 255);">メモ帳</span>
+</nav>
+
+    <!-- ✅ ナビゲーションバー -->
+<div class="navbar">
+  <a href="{% url 'memo' %}">メモ帳</a>  
+  <a href="{% url 'n_home' %}">NHOME</a>
+  <a href="./quiz.html">QUIZ</a>
+  
+</div>
+<!-- ✅ ナビゲーション（装飾） -->
+<div class="toolbar">
+<!-- ✅ モード選択 -->
+<select id="mode" title="色の適用方法を選びます">
+  <option value="text">文字色</option>
+  <option value="highlight">網掛け</option>
+  <option value="memo">メモ背景</option>
+</select>
+
+<!-- ✅ 文字サイズ -->
+<select onchange="changeSize(this.value)" title="文字の大きさを変えます">
+  <option value="1">小</option>
+  <option value="2">少し小</option>
+  <option value="3">普通</option>
+  <option value="4">やや大</option>
+  <option value="5">大</option>
+  <option value="6">かなり大</option>
+  <option value="7">特大</option>
+</select>
+
+<!-- ✅ 文字位置 -->
+<select onchange="changeAlign(this.value)" title="文字の位置を変更します">
+  <option value="left">左</option>
+  <option value="center">中央</option>
+  <option value="right">右</option>
+</select>
+
+<h4>カラー</h4>
+
+<!-- ✅ カラーピッカー -->
+<input type="color" onchange="applyColor(this.value)">
+
+<!-- ✅ 16色ボタン（これ1つだけにする） -->
+<div style="display:flex; gap:5px; flex-wrap:wrap;">
+
+  <button style="background:#ff0000; width:25px; height:25px;" onclick="applyColor('#ff0000')"></button>
+  <button style="background:#0000ff; width:25px; height:25px;" onclick="applyColor('#0000ff')"></button>
+  <button style="background:#00ff00; width:25px; height:25px;" onclick="applyColor('#00ff00')"></button>
+  <button style="background:#ffff00; width:25px; height:25px;" onclick="applyColor('#ffff00')"></button>
+
+  <button style="background:#ff00ff; width:25px; height:25px;" onclick="applyColor('#ff00ff')"></button>
+  <button style="background:#00ffff; width:25px; height:25px;" onclick="applyColor('#00ffff')"></button>
+  <button style="background:#ffa500; width:25px; height:25px;" onclick="applyColor('#ffa500')"></button>
+  <button style="background:#800080; width:25px; height:25px;" onclick="applyColor('#800080')"></button>
+
+  <button style="background:#ffc0cb; width:25px; height:25px;" onclick="applyColor('#ffc0cb')"></button>
+  <button style="background:#00ccff; width:25px; height:25px;" onclick="applyColor('#00ccff')"></button>
+  <button style="background:#66ff66; width:25px; height:25px;" onclick="applyColor('#66ff66')"></button>
+  <button style="background:#cccccc; width:25px; height:25px;" onclick="applyColor('#cccccc')"></button>
+
+  <button style="background:#000000; width:25px; height:25px;" onclick="applyColor('#000000')"></button>
+  <button style="background:#ffffff; width:25px; height:25px; border:1px solid #ccc;" onclick="applyColor('#ffffff')"></button>
+  <button style="background:#8b4513; width:25px; height:25px;" onclick="applyColor('#8b4513')"></button>
+  <button style="background:#ff1493; width:25px; height:25px;" onclick="applyColor('#ff1493')"></button>
+
+</div>
+
+
+
+
+
+</div>
+
+
+<div id="memo" contenteditable="true"
+  style="width:90%; height:300px; border:1px solid #ccc; padding:10px;">
+</div>
+<!-- ✅ メモ本体 -->
+
+
+<div style="margin-left:20px;">
+  <button onclick="saveMemo()">保存</button>
+  <button onclick="clearMemo()">削除</button>
+  <button onclick="resetMemo()">リセット</button>
+</div>
+
+
+<h3 style="margin-left:20px;">検索</h3>
+
+<!-- 年 -->
+<select id="yearFilter" onchange="showMemos()">
+  <option value="">すべて</option>
+</select>
+
+<!-- 月 -->
+<select id="monthFilter" onchange="showMemos()">
+  <option value="">すべて</option>
+</select>
+
+<!-- 日 -->
+<select id="dayFilter" onchange="showMemos()">
+  <option value="">すべて</option>
+</select>
+<h3 style="margin-left:20px;">保存したメモ</h3>
+<div id="memoList"></div>
+
+
+<button id="topBtn" onclick="scrollToTop()">↑</button>
+
+{% block scripts %}
+<script src="{% static 'js/memo.js' %}"></script>
+{% endblock %}

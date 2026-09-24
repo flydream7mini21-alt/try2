@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ログインページ</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+</head>
+
+<body class="login-page">
+    <main class="login-shell">
+        <section class="login-intro">
+            <p class="login-kicker">WELCOME BACK</p>
+            <h1>CHOMEへ<br>ログイン</h1>
+            <p class="login-description">予定、メモ、チャット、ファイルをひとつの場所で管理できます。</p>
+            <div class="intro-rule"></div>
+            <p class="intro-note">登録済みのアカウントでログインして、あなたのホーム画面へ進みましょう。</p>
+        </section>
+
+        <section class="login-panel">
+            <div class="login-panel-heading">
+                <span class="panel-mark">C</span>
+                <div>
+                    <p class="panel-eyebrow">ACCOUNT</p>
+                    <h2>アカウントにログイン</h2>
+                </div>
+            </div>
+
+            <form class="login-form" method="POST" action="{% url 'login' %}">
+                {% csrf_token %}
+
+                <div class="field-group">
+                    <label for="username">ユーザー名</label>
+                    <input id="username" type="text" name="username" autocomplete="username" required>
+                </div>
+
+                <div class="field-group">
+                    <label for="password">パスワード</label>
+                    <input id="password" type="password" name="password" autocomplete="current-password" required>
+                </div>
+
+                <button type="submit">ログイン <span aria-hidden="true">→</span></button>
+            </form>
+
+            <p class="signup-prompt">アカウントをお持ちでない方は<a href="{% url 'signup' %}">新規登録はこちら</a></p>
+        </section>
+    </main>
+
+</body>
+</html>

@@ -1,0 +1,682 @@
+{% extends "base.html" %}
+{% load static %}
+{% load get_item %}
+
+{% block extra_css %}
+<style>
+.report-page { max-width: 1240px; margin: 0 auto; color: #173f49; }
+.report-header { padding: 28px 0 22px; border-bottom: 1px solid rgba(23,63,73,.16); }
+.report-header h1 { margin: 0; font-size: 42px; }
+.report-header p { margin: 10px 0 0; color: #567179; }
+.report-layout { display: grid; grid-template-columns: minmax(360px, .8fr) minmax(0, 1.2fr); gap: 22px; padding-top: 24px; }
+.report-create-layout { grid-template-columns: 1fr; }
+.report-list-layout { grid-template-columns: 1fr; }
+.report-panel { padding: 22px; background: rgba(255,255,255,.84); border: 1px solid rgba(23,63,73,.13); box-shadow: 0 10px 24px rgba(23,63,73,.07); }
+.report-panel h2 { margin: 0 0 18px; font-size: 21px; }
+.report-form label { display: block; margin: 14px 0 6px; font-weight: bold; }
+.report-form input, .report-form textarea, .report-form select, .report-category-create input { width: 100%; padding: 11px; border: 1px solid #b9c9cc; border-radius: 6px; font: inherit; }
+.report-category-create { margin-bottom: 18px; }
+.report-category-create label { display: block; margin: 0 0 6px; font-weight: bold; }
+.report-category-create button { margin-top: 8px; padding: 9px 14px; border: 0; border-radius: 6px; background: #f28f3b; color: #fff; font-weight: bold; cursor: pointer; }
+.report-form textarea { min-height: 180px; resize: vertical; line-height: 1.7; }
+.report-form input[type="file"] { padding: 8px; background: #f7fbfb; }
+.report-link-helper { margin: 12px 0 20px; padding: 16px; border: 1px solid rgba(23,63,73,.13); border-radius: 8px; background: linear-gradient(180deg, #f9fdfd 0%, #eef7f6 100%); }
+.report-link-helper h3 { margin: 0 0 12px; font-size: 18px; }
+.report-link-helper-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.report-link-helper button { margin-top: 8px; padding: 10px 14px; border: 0; border-radius: 6px; background: #008f87; color: #fff; font-weight: bold; cursor: pointer; }
+.report-link-helper small { display: block; margin-top: 8px; color: #567179; }
+#report-editor { min-height: 200px; padding: 16px; border: 2px solid #b9c9cc; border-radius: 6px; background: #fff; color: #567179; line-height: 1.8; overflow-y: auto; font-family: inherit; font-size: inherit; white-space: normal; word-break: break-word; }
+#report-editor:empty::before { content: "本文を入力してください"; color: #a7b9bc; }
+#report-editor p, #report-editor div { margin: 0 0 10px; }
+#report-editor a { display: inline; color: #007caa; text-decoration: underline; font-weight: bold; }
+.report-inline-link { display: inline; }
+.report-inline-link a { display: inline-block; padding: 2px 8px; border-radius: 4px; background: rgba(0, 143, 135, 0.08); color: #007caa; text-decoration: underline; font-weight: bold; line-height: 1.6; }
+@media (max-width: 760px) { .report-link-helper-grid { grid-template-columns: 1fr; } }
+.report-save-mode { margin-top: 18px; }
+.report-save-mode label { display: block; margin-bottom: 8px; font-weight: bold; }
+.report-save-hint { margin-top: 8px; color: #567179; font-size: 13px; line-height: 1.6; }
+.report-save-actions { display: flex; gap: 12px; margin-top: 18px; }
+.report-submit,
+.report-download { flex: 1; padding: 12px; border: 0; border-radius: 6px; font-weight: bold; cursor: pointer; }
+.report-submit { background: #008f87; color: #fff; }
+.report-download { background: #f3f7f8; color: #173f49; border: 1px solid #b9c9cc; }
+.report-download:disabled { opacity: .45; cursor: not-allowed; }
+.report-dropzone { padding: 22px 12px; border: 2px dashed #9ab7ba; border-radius: 8px; background: #f7fbfb; color: #567179; text-align: center; cursor: pointer; }
+.report-dropzone.is-dragging, .report-dropzone:hover { border-color: #008f87; background: #effcfb; }
+.report-dropzone input { display: none; }
+.report-file-list { margin-top: 10px; color: #567179; font-size: 13px; line-height: 1.7; }
+.report-list { display: grid; gap: 14px; }
+.report-filter-bar { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px; margin: 18px 0 26px; }
+.report-filter-bar label { display: block; margin-bottom: 6px; font-weight: bold; }
+.report-filter-bar select { min-width: 220px; padding: 10px 12px; border: 1px solid #b9c9cc; border-radius: 6px; }
+.report-category-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+.report-category-card { display: flex; flex-direction: column; gap: 14px; padding: 18px; border: 1px solid rgba(23,63,73,.13); background: rgba(255,255,255,.84); box-shadow: 0 10px 24px rgba(23,63,73,.07); }
+.report-category-card-header { padding-bottom: 10px; border-bottom: 1px solid #e2eaeb; }
+.report-category-card-header h3 { margin: 0; font-size: 20px; }
+.report-category-card-header span { color: #567179; font-size: 13px; }
+.report-item { padding: 18px; border-left: 4px solid #f28f3b; background: #fff; box-shadow: 0 5px 15px rgba(23,63,73,.06); }
+.report-item time { color: #008f87; font-size: 13px; font-weight: bold; }
+.report-item h3 { margin: 7px 0 10px; font-size: 20px; white-space: pre-wrap; }
+.report-item h3 a { color: #007caa; text-decoration: underline; }
+.report-content { color: #567179; line-height: 1.8; white-space: pre-wrap; overflow-wrap: anywhere; }
+.report-files { margin: 15px 0 0; padding-top: 12px; border-top: 1px solid #e2eaeb; }
+.report-list-pager { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 22px; }
+.report-list-pager a, .report-list-pager span { display: inline-flex; align-items: center; justify-content: center; min-width: 42px; min-height: 42px; border-radius: 6px; }
+.report-list-pager a { background: #008f87; color: #fff; text-decoration: none; font-weight: bold; }
+.report-list-pager span { background: #edf4f5; color: #173f49; font-weight: bold; }
+.report-files strong { display: block; margin-bottom: 6px; font-size: 13px; }
+.report-files a { display: block; margin-top: 4px; color: #007caa; overflow-wrap: anywhere; }
+.report-empty { padding: 44px 20px; border: 1px dashed #a9bec1; color: #71868b; text-align: center; }
+.report-summary { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; padding-top: 28px; }
+.report-stat { padding: 18px; border-top: 4px solid #12b88e; background: rgba(255,255,255,.84); box-shadow: 0 10px 24px rgba(23,63,73,.07); }
+.report-stat:nth-child(2) { border-top-color: #03a9f4; }
+.report-stat span { color: #71868b; font-size: 14px; }
+.report-stat strong { display: block; margin-top: 10px; font-size: 32px; }
+.report-recent { margin-top: 28px; padding: 22px; border: 1px solid rgba(23,63,73,.13); background: rgba(255,255,255,.84); box-shadow: 0 10px 24px rgba(23,63,73,.07); }
+.report-recent h2 { margin: 0 0 16px; font-size: 21px; }
+.report-recent-item { display: flex; justify-content: space-between; gap: 16px; padding: 12px 0; border-top: 1px solid #e2eaeb; }
+.report-recent-item time { color: #008f87; font-size: 13px; }
+.report-recent-item a { color: #007caa; text-decoration: underline; }
+.report-detail { max-width: 900px; margin: 28px auto 0; padding: 28px; border: 1px solid rgba(23,63,73,.13); background: rgba(255,255,255,.84); box-shadow: 0 10px 24px rgba(23,63,73,.07); }
+.report-detail time { color: #008f87; font-size: 14px; font-weight: bold; }
+.report-detail h2 { margin: 10px 0 20px; font-size: 30px; white-space: pre-wrap; }
+.report-detail-content { padding-top: 20px; border-top: 1px solid #e2eaeb; color: #567179; line-height: 1.9; white-space: pre-wrap; overflow-wrap: anywhere; }
+.report-detail-toolbar { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px; margin-top: 24px; padding-top: 20px; border-top: 1px solid #e2eaeb; }
+.report-detail-controls { display: flex; gap: 10px; }
+.report-detail-action,
+.report-detail-download,
+.report-delete-confirm,
+.report-delete-cancel,
+.report-edit-submit { padding: 10px 16px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+.report-detail-action { border: 1px solid #b9c9cc; background: #f3f7f8; color: #173f49; }
+.report-detail-action.delete { border-color: #d98b8b; color: #a03535; background: #fff5f5; }
+.report-detail-download { border: 1px solid #b9c9cc; background: #f3f7f8; color: #173f49; }
+.report-detail-download:disabled { opacity: .45; cursor: not-allowed; }
+.report-detail-actions label { display: block; font-weight: bold; margin-bottom: 6px; }
+.report-detail-actions select { min-width: 180px; padding: 10px 12px; border: 1px solid #b9c9cc; border-radius: 6px; }
+.report-edit-panel,
+.report-delete-panel { margin-top: 20px; padding: 18px; border: 1px solid rgba(23,63,73,.13); background: #fbfdfd; border-radius: 8px; }
+.report-edit-form label { display: block; margin: 14px 0 6px; font-weight: bold; }
+.report-edit-form input,
+.report-edit-form textarea,
+.report-edit-form select { width: 100%; padding: 10px 12px; border: 1px solid #b9c9cc; border-radius: 6px; font: inherit; }
+.report-edit-form textarea { min-height: 160px; resize: vertical; }
+.report-edit-submit { border: 0; background: #008f87; color: #fff; }
+.report-delete-panel p { margin: 0 0 14px; color: #5b656a; }
+.report-delete-actions { display: flex; gap: 10px; }
+.report-delete-confirm { border: 0; background: #d9534f; color: #fff; }
+.report-delete-cancel { border: 1px solid #b9c9cc; background: #fff; color: #173f49; }
+.report-home-menu { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding-top: 30px; }
+.report-menu-link { display: block; min-height: 150px; padding: 24px; border: 1px solid rgba(23,63,73,.13); background: rgba(255,255,255,.84); color: #173f49; text-decoration: none; box-shadow: 0 10px 24px rgba(23,63,73,.07); transition: transform .2s ease, box-shadow .2s ease; }
+.report-menu-link:hover { transform: translateY(-4px); box-shadow: 0 16px 30px rgba(23,63,73,.13); }
+.report-menu-link strong { display: block; margin-bottom: 12px; color: #008f87; font-size: 20px; }
+.report-menu-link span { color: #567179; line-height: 1.7; }
+.report-back { display: inline-block; margin-top: 20px; color: #007caa; }
+.report-top-button { position: fixed; right: 24px; bottom: 24px; z-index: 20; display: grid; width: 46px; height: 46px; place-items: center; border: 0; border-radius: 50%; background: #008f87; color: #fff; box-shadow: 0 8px 18px rgba(23,63,73,.2); font-size: 24px; line-height: 1; cursor: pointer; opacity: 0; visibility: hidden; transform: translateY(10px); transition: opacity .2s ease, visibility .2s ease, transform .2s ease, background-color .2s ease; }
+.report-top-button.is-visible { opacity: 1; visibility: visible; transform: translateY(0); }
+.report-top-button:hover { background: #00766f; }
+.report-top-button:focus-visible { outline: 3px solid #f28f3b; outline-offset: 3px; }
+@media (max-width: 980px) { .report-category-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 760px) { .report-layout { grid-template-columns: 1fr; } .report-header h1 { font-size: 34px; } .report-category-grid { grid-template-columns: 1fr; } .report-home-menu { grid-template-columns: 1fr; } .report-top-button { right: 16px; bottom: 16px; } }
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="report-page">
+    <header class="report-header">
+        <h1>レポート</h1>
+        <p>作成した時刻とカテゴリで内容と関連ファイルをまとめて管理できます。</p>
+    </header>
+
+    {% if mode == "home" %}
+    <section class="report-home-menu" aria-label="レポート機能">
+        <a class="report-menu-link" href="{% url 'report' %}?mode=create"><strong>レポートを作成</strong><span>本文、カテゴリ、ファイルをまとめて新しく保存します。</span></a>
+        <a class="report-menu-link" href="{% url 'report' %}?mode=list"><strong>保存済みレポート</strong><span>作成日時とカテゴリでレポートを確認します。</span></a>
+        <a class="report-menu-link" href="{% url 'n_home' %}"><strong>HOMEへ戻る</strong><span>通常のホーム画面へ戻ります。</span></a>
+    </section>
+    <section class="report-summary" aria-label="概要">
+        <div class="report-stat"><span>保存済みレポート</span><strong>{{ report_count }}</strong></div>
+        <div class="report-stat"><span>添付ファイル</span><strong>{{ report_file_count }}</strong></div>
+    </section>
+    <section class="report-recent" aria-label="最近のレポート">
+        <h2>最近のレポート</h2>
+        {% for report in recent_reports %}
+            <div class="report-recent-item"><a href="{% url 'report' %}?id={{ report.id }}">{{ report.title }}</a><time>{{ report.created_at|date:'Y年n月j日 H:i' }}</time></div>
+        {% empty %}<div class="report-empty">まだレポートはありません。</div>{% endfor %}
+    </section>
+    {% elif mode == "detail" %}
+    <a class="report-back" href="{% url 'report' %}">レポートホームへ戻る</a>
+    <article class="report-detail">
+        <time>{{ selected_report.created_at|date:'Y年n月j日 H:i' }} に作成</time>
+        {% if selected_report.title and selected_report.title|is_url %}
+            <h2><a href="{{ selected_report.title }}" target="_blank" rel="noopener">{{ selected_report.title }}</a></h2>
+        {% else %}
+            <h2>{{ selected_report.title }}</h2>
+        {% endif %}
+        {% if selected_report.category %}<div>カテゴリ: {{ selected_report.category.name }}</div>{% endif %}
+        {% if selected_report.content %}<div class="report-detail-content">{{ selected_report.content|safe|linebreaks }}</div>{% endif %}
+
+        <div class="report-detail-toolbar">
+            <div class="report-detail-controls">
+                <button type="button" class="report-detail-action" data-target="report-edit-panel">編集</button>
+                <button type="button" class="report-detail-action delete" data-target="report-delete-panel">削除</button>
+            </div>
+            <div class="report-detail-actions">
+                <div>
+                    <label for="report-detail-save-mode">保存形式</label>
+                    <select id="report-detail-save-mode">
+                        <option value="normal">そのまま表示</option>
+                        <option value="txt">.txt にして保存</option>
+                    </select>
+                </div>
+                <button type="button" class="report-detail-download" id="report-detail-download" disabled>ダウンロード</button>
+            </div>
+        </div>
+
+        <div class="report-edit-panel" id="report-edit-panel" hidden>
+            <form class="report-edit-form" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="report_id" value="{{ selected_report.id }}">
+                <label for="report-edit-title">タイトル</label>
+                <textarea id="report-edit-title" name="title" rows="2" required>{{ selected_report.title }}</textarea>
+                <label for="report-edit-category">カテゴリ</label>
+                <select id="report-edit-category" name="category_id">
+                    <option value="">カテゴリなし</option>
+                    {% for category in categories %}
+                        <option value="{{ category.id }}" {% if selected_report.category and selected_report.category.id == category.id %}selected{% endif %}>{{ category.name }}</option>
+                    {% endfor %}
+                </select>
+                <label for="report-edit-content">内容</label>
+                <textarea id="report-edit-content" name="content">{{ selected_report.content }}</textarea>
+                <div style="margin-top: 16px;">
+                    <button type="submit" class="report-edit-submit" name="action" value="update_report">保存する</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="report-delete-panel" id="report-delete-panel" hidden>
+            <p>本当に削除しますか？削除すると元に戻せません。</p>
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="report_id" value="{{ selected_report.id }}">
+                <div class="report-delete-actions">
+                    <button type="submit" class="report-delete-confirm" name="action" value="delete_report">削除する</button>
+                    <button type="button" class="report-delete-cancel">キャンセル</button>
+                </div>
+            </form>
+        </div>
+
+        {% with attached_files=selected_report.files.all %}
+        {% if attached_files %}<div class="report-files"><strong>添付ファイル</strong>{% for report_file in attached_files %}<a href="{{ report_file.file.url }}" target="_blank" rel="noopener">{{ report_file.file.name }}</a>{% endfor %}</div>{% endif %}
+        {% endwith %}
+    </article>
+    {% else %}
+    <a class="report-back" href="{% url 'report' %}">レポートホームへ戻る</a>
+    {% endif %}
+
+    {% if mode == "create" or mode == "list" %}
+    <div class="report-layout{% if mode == "create" %} report-create-layout{% elif mode == "list" %} report-list-layout{% endif %}">
+    {% if mode == "create" %}
+        <section class="report-panel">
+            <h2>レポートを作成</h2>
+            <form class="report-category-create" method="post">
+                {% csrf_token %}
+                <label for="report-category-name">新しいカテゴリ</label>
+                <input id="report-category-name" type="text" name="category_name" placeholder="カテゴリ名">
+                <button type="submit" name="action" value="create_category">カテゴリを追加</button>
+            </form>
+            <form class="report-form" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <label for="report-title">タイトル</label>
+                <textarea id="report-title" name="title" rows="2" required></textarea>
+                <div class="report-link-helper" aria-label="本文へリンクを挿入">
+                    <h3>本文にリンクを挿入</h3>
+                    <div class="report-link-helper-grid">
+                        <div>
+                            <label for="report-link-title">表示名</label>
+                            <input id="report-link-title" type="text" placeholder="例: 会議資料">
+                        </div>
+                        <div>
+                            <label for="report-link-url">URL</label>
+                            <input id="report-link-url" type="url" placeholder="https://example.com">
+                        </div>
+                    </div>
+                    <button type="button" id="report-link-add">リンクを追加</button>
+                    <small>表示名とURLを入力して「リンクを追加」ボタンをクリックしてください。</small>
+                    
+                    <div id="report-link-list-container" style="margin-top: 14px; display: none;">
+                        <label for="report-link-select">作成済みリンク一覧</label>
+                        <div style="display: flex; gap: 8px;">
+                            <select id="report-link-select" style="flex: 1; padding: 10px 12px; border: 1px solid #b9c9cc; border-radius: 6px;">
+                                <option value="">リンクを選択してください</option>
+                            </select>
+                            <button type="button" id="report-link-insert" style="padding: 10px 14px; border: 0; border-radius: 6px; background: #008f87; color: #fff; font-weight: bold; cursor: pointer;">本文に挿入</button>
+                            <button type="button" id="report-link-delete" style="padding: 10px 14px; border: 0; border-radius: 6px; background: #d9534f; color: #fff; font-weight: bold; cursor: pointer;">削除</button>
+                        </div>
+                    </div>
+                </div>
+                <label for="report-category">保存先カテゴリ</label>
+                <select id="report-category" name="category_id">
+                    <option value="">カテゴリなし</option>
+                    {% for category in categories %}<option value="{{ category.id }}">{{ category.name }}</option>{% endfor %}
+                </select>
+                <label>本文（テキストとリンク）</label>
+                <div id="report-editor" contenteditable="true"></div>
+                <textarea id="report-content" name="content" style="display: none;"></textarea>
+                <div class="report-save-mode">
+                    <label for="report-save-mode">保存形式</label>
+                    <select id="report-save-mode" name="save_mode">
+                        <option value="normal">そのまま保存</option>
+                        <option value="txt">.txt にして保存</option>
+                    </select>
+                    <div class="report-save-hint" id="report-save-hint">通常のままレポートとして保存されます。</div>
+                </div>
+                <label for="report-files">ファイル</label>
+                <div class="report-dropzone" id="report-dropzone">
+                    <span>ここにファイルをドロップ、またはクリックして選択</span>
+                    <input id="report-files" type="file" name="files" multiple>
+                    <div class="report-file-list" id="report-file-list"></div>
+                </div>
+                <div class="report-save-actions">
+                    <button class="report-submit" type="submit">レポートを保存</button>
+                    <button class="report-download" type="button" id="report-download-button" disabled>ダウンロード</button>
+                </div>
+            </form>
+        </section>
+    {% endif %}
+
+    {% if mode == "list" %}
+        <section class="report-panel">
+            <h2>保存済みレポート</h2>
+            <div class="report-filter-bar">
+                <div>
+                    <label for="report-category-filter">カテゴリで絞り込み</label>
+                    <select id="report-category-filter" name="category_id" onchange="location.href=this.value">
+                        <option value="{% url 'report' %}?mode=list">全カテゴリ</option>
+                        {% for category in categories %}
+                            <option value="{% url 'report' %}?mode=list&category_id={{ category.id }}" {% if selected_category_id == category.id|stringformat:'s' %}selected{% endif %}>{{ category.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            {% if reports %}
+                {% if total_category_pages > 1 %}
+                    <div class="report-list-pager" aria-label="カテゴリページ切り替え">
+                        <a href="{{ list_base_url }}&category_page={{ prev_category_page }}" aria-label="前のカテゴリページ">＜</a>
+                        <span>{{ category_page }} / {{ total_category_pages }}</span>
+                        <a href="{{ list_base_url }}&category_page={{ next_category_page }}" aria-label="次のカテゴリページ">＞</a>
+                    </div>
+                {% endif %}
+                {% if visible_categories %}
+                    <div class="report-category-grid">
+                        {% for category in visible_categories %}
+                            <div class="report-category-card">
+                                <div class="report-category-card-header">
+                                    <h3>{{ category.name }}</h3>
+                                    <span>{{ category_reports|get_item:category.id|length }}件</span>
+                                </div>
+                                <div class="report-list">
+                                    {% with category_reports_list=category_reports|get_item:category.id %}
+                                        {% if category_reports_list %}
+                                            {% for report in category_reports_list %}
+                                                <article class="report-item">
+                                                    <time datetime="{{ report.created_at|date:'c' }}">{{ report.created_at|date:'Y年n月j日 H:i' }}</time>
+                                                    {% if report.title and report.title|is_url %}
+                                                        <h3><a href="{{ report.title }}" target="_blank" rel="noopener">{{ report.title }}</a></h3>
+                                                    {% else %}
+                                                        <h3><a href="{% url 'report' %}?id={{ report.id }}">{{ report.title }}</a></h3>
+                                                    {% endif %}
+                                                    {% if report.content %}<div class="report-content">{{ report.content|safe }}</div>{% endif %}
+                                                    {% with attached_files=report.files.all %}
+                                                    {% if attached_files %}
+                                                        <div class="report-files">
+                                                            <strong>添付ファイル</strong>
+                                                            {% for report_file in attached_files %}
+                                                                <a href="{{ report_file.file.url }}" target="_blank" rel="noopener">{{ report_file.file.name }}</a>
+                                                            {% endfor %}
+                                                        </div>
+                                                    {% endif %}
+                                                    {% endwith %}
+                                                </article>
+                                            {% endfor %}
+                                        {% else %}
+                                            <div class="report-empty">このカテゴリにはまだレポートがありません。</div>
+                                        {% endif %}
+                                    {% endwith %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="report-empty">まだレポートはありません。</div>
+                {% endif %}
+            {% else %}
+                <div class="report-empty">まだレポートはありません。</div>
+            {% endif %}
+        </section>
+    {% endif %}
+    </div>
+    {% endif %}
+</main>
+<button type="button" class="report-top-button" id="report-top-button" aria-label="ページ上部へ戻る" title="ページ上部へ戻る">↑</button>
+<script>
+const reportDropzone = document.getElementById("report-dropzone");
+const reportFiles = document.getElementById("report-files");
+const reportFileList = document.getElementById("report-file-list");
+const reportTitle = document.getElementById("report-title");
+const reportContent = document.getElementById("report-content");
+const reportContentPreview = document.getElementById("report-content-preview");
+const reportLinkTitle = document.getElementById("report-link-title");
+const reportLinkUrl = document.getElementById("report-link-url");
+const reportLinkAddButton = document.getElementById("report-link-add");
+const reportLinkInsertButton = document.getElementById("report-link-insert");
+const reportLinkDeleteButton = document.getElementById("report-link-delete");
+const reportLinkSelect = document.getElementById("report-link-select");
+const reportLinkListContainer = document.getElementById("report-link-list-container");
+const reportLinksDisplay = document.getElementById("report-links-display");
+let reportLinkList = [];
+const reportEditor = document.getElementById("report-editor");
+const reportSaveMode = document.getElementById("report-save-mode");
+const reportSaveHint = document.getElementById("report-save-hint");
+const reportDownloadButton = document.getElementById("report-download-button");
+const reportDetailSaveMode = document.getElementById("report-detail-save-mode");
+const reportDetailDownloadButton = document.getElementById("report-detail-download");
+const reportDetailTitle = document.querySelector(".report-detail h2");
+const reportDetailContent = document.querySelector(".report-detail-content");
+const reportDetailEditToggleButtons = document.querySelectorAll("[data-target='report-edit-panel']");
+const reportDetailDeleteToggleButtons = document.querySelectorAll("[data-target='report-delete-panel']");
+const reportEditPanel = document.getElementById("report-edit-panel");
+const reportDeletePanel = document.getElementById("report-delete-panel");
+const reportDeleteCancelButtons = document.querySelectorAll(".report-delete-cancel");
+const reportTopButton = document.getElementById("report-top-button");
+
+function updateReportTopButton() {
+    if (!reportTopButton) return;
+    reportTopButton.classList.toggle("is-visible", window.scrollY > 240);
+}
+
+if (reportTopButton) {
+    window.addEventListener("scroll", updateReportTopButton, { passive: true });
+    reportTopButton.addEventListener("click", () => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+    updateReportTopButton();
+}
+
+function showReportFiles() {
+    if (!reportFiles || !reportFileList) return;
+    reportFileList.textContent = Array.from(reportFiles.files)
+        .map(file => file.name)
+        .join("\n");
+}
+
+function updateSaveModeState() {
+    if (!reportSaveMode || !reportSaveHint || !reportDownloadButton) return;
+
+    const selectedMode = reportSaveMode.value;
+    const isTxtMode = selectedMode === "txt";
+    reportSaveHint.textContent = isTxtMode
+        ? "拡張子を .txt に変更して、ファイルとしてダウンロードできます。"
+        : "通常のままレポートとして保存されます。";
+    reportDownloadButton.disabled = !isTxtMode;
+}
+
+function updateContentPreview() {
+    if (!reportContentPreview || !reportContent) return;
+    reportContentPreview.innerHTML = reportContent.value || "";
+}
+
+// エディタの内容をテキストエリアに同期
+function syncEditorToContent() {
+    if (!reportEditor || !reportContent) return;
+    reportContent.value = reportEditor.innerHTML;
+}
+
+function focusReportEditorAtEnd() {
+    if (!reportEditor) return;
+    reportEditor.focus();
+    const selection = window.getSelection();
+    const range = document.createRange();
+    range.selectNodeContents(reportEditor);
+    range.collapse(false);
+    selection.removeAllRanges();
+    selection.addRange(range);
+}
+
+function insertReportLink() {
+    if (!reportLinkSelect || !reportEditor) return;
+
+    const selectedIndex = reportLinkSelect.value;
+    if (!selectedIndex || selectedIndex === "") return;
+
+    const linkData = reportLinkList[selectedIndex];
+    if (!linkData) return;
+
+    const safeTitle = String(linkData.title || "リンク")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/\"/g, "&quot;");
+
+    const linkHTML = `<span class="report-inline-link"><a href="${linkData.url}" target="_blank" rel="noopener noreferrer">${safeTitle}</a></span>&nbsp;`;
+
+    const selection = window.getSelection();
+    if (selection && selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0);
+        const fragment = document.createRange().createContextualFragment(linkHTML);
+        range.insertNode(fragment);
+
+        const insertedNode = fragment.lastChild || fragment.firstChild;
+        if (insertedNode) {
+            range.setStartAfter(insertedNode);
+            range.collapse(true);
+            selection.removeAllRanges();
+            selection.addRange(range);
+        }
+    } else {
+        reportEditor.insertAdjacentHTML("beforeend", linkHTML);
+        focusReportEditorAtEnd();
+    }
+
+    reportLinkSelect.value = "";
+    if (reportLinkListContainer) {
+        reportLinkListContainer.style.display = "none";
+    }
+    syncEditorToContent();
+    focusReportEditorAtEnd();
+}
+
+function updateContentDisplay() {
+    // 新しいシステムでは不要（エディタが直接管理）
+}
+
+
+function addReportLink() {
+    if (!reportLinkTitle || !reportLinkUrl) return;
+    
+    const linkText = reportLinkTitle.value.trim();
+    const linkUrl = reportLinkUrl.value.trim();
+    
+    if (!linkUrl) {
+        reportLinkUrl.focus();
+        return;
+    }
+    
+    const linkData = {
+        title: linkText || "リンク",
+        url: linkUrl
+    };
+    
+    reportLinkList.push(linkData);
+    updateLinkSelectOptions();
+    reportLinkTitle.value = "";
+    reportLinkUrl.value = "";
+    reportLinkTitle.focus();
+}
+
+function updateLinkSelectOptions() {
+    if (!reportLinkSelect || !reportLinkListContainer) return;
+    
+    if (reportLinkList.length === 0) {
+        reportLinkListContainer.style.display = "none";
+        reportLinkSelect.innerHTML = '<option value="">リンクを選択してください</option>';
+        return;
+    }
+    
+    reportLinkListContainer.style.display = "block";
+    reportLinkSelect.innerHTML = '<option value="">リンクを選択してください</option>';
+    
+    reportLinkList.forEach((link, index) => {
+        const option = document.createElement("option");
+        option.value = index;
+        option.textContent = `${link.title} - ${link.url}`;
+        reportLinkSelect.appendChild(option);
+    });
+}
+
+function deleteReportLink() {
+    if (!reportLinkSelect) return;
+    
+    const selectedIndex = reportLinkSelect.value;
+    if (!selectedIndex || selectedIndex === "") return;
+    
+    reportLinkList.splice(selectedIndex, 1);
+    updateLinkSelectOptions();
+}
+
+function deleteReportLinkByIndex(index) {
+    reportLinkList.splice(index, 1);
+    updateLinkSelectOptions();
+}
+
+function downloadReportFile() {
+    if (!reportContent || !reportSaveMode || reportSaveMode.value !== "txt") {
+        return;
+    }
+
+    const title = (reportTitle && reportTitle.value.trim()) || "report";
+    const safeTitle = title.replace(/[\\/:*?"<>|\r\n]+/g, "").trim() || "report";
+    const content = reportContent.value || "";
+    downloadTextFile(`${safeTitle}.txt`, content);
+}
+
+function updateDetailSaveModeState() {
+    if (!reportDetailSaveMode || !reportDetailDownloadButton) return;
+    reportDetailDownloadButton.disabled = reportDetailSaveMode.value !== "txt";
+}
+
+function downloadSavedReportFile() {
+    if (!reportDetailSaveMode || reportDetailSaveMode.value !== "txt") {
+        return;
+    }
+
+    const title = (reportDetailTitle && reportDetailTitle.textContent.trim()) || "report";
+    const safeTitle = title.replace(/[\\/:*?"<>|\r\n]+/g, "").trim() || "report";
+    const content = (reportDetailContent && reportDetailContent.textContent) || "";
+    downloadTextFile(`${safeTitle}.txt`, content);
+}
+
+if (reportLinkAddButton) {
+    reportLinkAddButton.addEventListener("click", addReportLink);
+}
+
+if (reportLinkInsertButton) {
+    reportLinkInsertButton.addEventListener("click", insertReportLink);
+}
+
+if (reportLinkDeleteButton) {
+    reportLinkDeleteButton.addEventListener("click", deleteReportLink);
+}
+
+// エディタの内容をテキストエリアに自動同期
+if (reportEditor) {
+    reportEditor.innerHTML = reportContent && reportContent.value ? reportContent.value : "";
+    reportEditor.addEventListener("input", syncEditorToContent);
+    reportEditor.addEventListener("blur", syncEditorToContent);
+    reportEditor.addEventListener("click", () => {
+        if (reportEditor.innerHTML === "<br>" || reportEditor.innerHTML === "&nbsp;") {
+            reportEditor.innerHTML = "";
+        }
+    });
+}
+
+// フォーム送信時も同期を確実にする
+const reportForm = document.querySelector(".report-form");
+if (reportForm) {
+    reportForm.addEventListener("submit", () => {
+        syncEditorToContent();
+    });
+}
+
+if (reportDownloadButton) {
+    reportDownloadButton.addEventListener("click", downloadReportFile);
+}
+
+if (reportSaveMode) {
+    reportSaveMode.addEventListener("change", updateSaveModeState);
+    updateSaveModeState();
+}
+
+if (reportContent) {
+    reportContent.addEventListener("input", updateContentPreview);
+    updateContentPreview();
+}
+
+// リンク削除ボタンのイベントリスナー
+document.addEventListener("click", (e) => {
+    if (e.target.classList.contains("report-link-remove")) {
+        const index = e.target.getAttribute("data-index");
+        deleteReportLinkByIndex(parseInt(index));
+    }
+});
+
+if (reportDetailSaveMode) {
+    reportDetailSaveMode.addEventListener("change", updateDetailSaveModeState);
+    updateDetailSaveModeState();
+}
+
+if (reportDetailDownloadButton) {
+    reportDetailDownloadButton.addEventListener("click", downloadSavedReportFile);
+}
+
+reportDetailEditToggleButtons.forEach(button => {
+    button.addEventListener("click", () => {
+        if (!reportEditPanel) return;
+        const shouldHide = !reportEditPanel.hidden;
+        reportEditPanel.hidden = shouldHide;
+        if (!shouldHide && reportDeletePanel) reportDeletePanel.hidden = true;
+    });
+});
+
+reportDetailDeleteToggleButtons.forEach(button => {
+    button.addEventListener("click", () => {
+        if (!reportDeletePanel) return;
+        const shouldHide = !reportDeletePanel.hidden;
+        reportDeletePanel.hidden = shouldHide;
+        if (!shouldHide && reportEditPanel) reportEditPanel.hidden = true;
+    });
+});
+
+reportDeleteCancelButtons.forEach(button => {
+    button.addEventListener("click", () => {
+        if (reportDeletePanel) reportDeletePanel.hidden = true;
+    });
+});
+
+if (reportDropzone && reportFiles && reportFileList) {
+reportDropzone.addEventListener("click", () => reportFiles.click());
+reportFiles.addEventListener("change", showReportFiles);
+reportDropzone.addEventListener("dragover", event => {
+    event.preventDefault();
+    reportDropzone.classList.add("is-dragging");
+});
+reportDropzone.addEventListener("dragleave", () => reportDropzone.classList.remove("is-dragging"));
+reportDropzone.addEventListener("drop", event => {
+    event.preventDefault();
+    reportDropzone.classList.remove("is-dragging");
+    reportFiles.files = event.dataTransfer.files;
+    showReportFiles();
+});
+}
+</script>
+{% endblock %}

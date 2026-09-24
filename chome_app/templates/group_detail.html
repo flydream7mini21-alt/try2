@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/group.css' %}?v=2">
+{% endblock %}
+
+{% block content %}
+
+<main class="group-detail-page">
+    <header class="group-header">
+        <div>
+            <p class="eyebrow">GROUP SPACE</p>
+            <h2>{{ group.name }}</h2>
+            <p class="group-description">メンバーと予定を確認できます</p>
+        </div>
+        <a href="{% url 'group_calendar' group.id %}" class="calendar-link">カレンダーを見る</a>
+    </header>
+
+    <div class="group-detail-grid">
+        <section class="detail-panel member-panel">
+            <div class="panel-heading">
+                <div>
+                    <p class="panel-kicker">MEMBERS</p>
+                    <h3>メンバー一覧</h3>
+                </div>
+                <span class="panel-count">{{ members|length }}人</span>
+            </div>
+
+            {% if members %}
+                <ul class="member-list">
+                    {% for m in members %}
+                        <li><span class="member-avatar">{{ m.user.username|first|upper }}</span>{{ m.user.username }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="empty-message">メンバーはまだいません。</p>
+            {% endif %}
+
+            <div class="member-add">
+                <h4>メンバーを追加</h4>
+                <form action="{% url 'add_group_member' group.id %}" method="POST">
+                    {% csrf_token %}
+                    <div class="member-add-form">
+                        <input type="text" name="member_id" placeholder="ユーザーIDを入力">
+                        <button type="submit">追加</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <section class="detail-panel schedule-panel">
+            <div class="panel-heading">
+                <div>
+                    <p class="panel-kicker">SCHEDULE</p>
+                    <h3>グループ予定</h3>
+                </div>
+                <a href="{% url 'group_calendar' group.id %}" class="panel-link">一覧を見る</a>
+            </div>
+
+            {% if schedules %}
+                <div class="schedule-list">
+                    {% for s in schedules %}
+                        <div class="schedule-item" style="--schedule-color: {{ s.color }}">
+                            <span class="schedule-dot"></span>
+                            <div class="schedule-content">
+                                <strong>{{ s.title }}</strong>
+                                <span>
+                                    {{ s.date }}
+                                    {% if s.start_time %} {{ s.start_time|time:"H:i" }}{% endif %}
+                                    {% if s.end_time %} - {{ s.end_time|time:"H:i" }}{% endif %}
+                                </span>
+                            </div>
+                            <a href="{% url 'delete_group_schedule' s.id %}" class="delete-btn">削除</a>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-schedule">
+                    <span class="empty-icon">○</span>
+                    <p>予定はありません。</p>
+                    <small>カレンダーから予定を確認できます。</small>
+                </div>
+            {% endif %}
+        </section>
+    </div>
+</main>
+
+{% endblock %}

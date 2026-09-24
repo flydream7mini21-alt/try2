@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+
+.result-container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 25px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.result-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.question-block {
+    margin-bottom: 30px;
+    padding: 15px;
+    background: #f7f7f7;
+    border-radius: 10px;
+}
+
+.question-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* 棒グラフ */
+.bar {
+    height: 24px;
+    background: #03a9f4;
+    border-radius: 6px;
+}
+
+.bar-wrapper {
+    background: #ddd;
+    border-radius: 6px;
+    margin-top: 6px;
+    width: 100%;
+}
+
+.choice-label {
+    font-size: 14px;
+    margin-top: 6px;
+}
+
+.text-answer {
+    background: #fff;
+    padding: 8px;
+    border-radius: 6px;
+    margin-top: 6px;
+    border: 1px solid #ccc;
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+
+<nav class="top-nav">
+    <div class="nav-left">
+        <a href="/n_home/">ホーム</a>
+        <a href="/calendar/">個人カレンダー</a>
+        <a href="{% url 'poll_list_active' poll.group.id %}">進行中の投票</a>
+        <a href="{% url 'poll_list_finished' poll.group.id %}">終了した投票</a>
+    </div>
+    <div class="nav-right">
+        <a href="/logout/">ログアウト</a>
+    </div>
+</nav>
+
+<div class="result-container">
+    <h2>{{ poll.title }}（結果）</h2>
+
+    {% for q in questions %}
+        <div class="question-block">
+            <div class="question-title">{{ q.text }}</div>
+
+            {% if q.answer_type == "choice" %}
+                {% for c in q.choices %}
+                    <div class="choice-label">
+                        {{ c.text }}（{{ c.percent }}%）
+                    </div>
+
+                    <div class="bar-wrapper">
+                        <div class="bar" style="width: {{ c.percent }}%;"></div>
+                    </div>
+                {% endfor %}
+
+            {% else %}
+                <div style="margin-top:10px;">
+                    {% for a in q.text_answers %}
+                        <div class="text-answer">{{ a.text }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

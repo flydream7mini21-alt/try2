@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/friend_home.css' %}">
+{% endblock %}
+
+{% block content %}
+
+
+
+<div class="container">
+
+    <h2>フレンド・チャットホーム</h2>
+
+    <!-- ★ 右上ID表示 -->
+    <div class="top-right-id">
+        ID: {{ user.unique_id }}
+
+        <a href="{% url 'friend_request' %}" class="jump-btn">フレンド追加</a>
+        <a href="{% url 'friend_list' %}" class="jump-btn">フレンド一覧</a>
+        <a href="#group-list" class="jump-btn">グループ一覧</a>
+        <a href="{% url 'group_create' %}" class="jump-btn">グループ作成</a> 
+        <a href="{% url 'friend_profile' %}" class="jump-btn">プロフィール</a> 
+        
+        
+       
+    </div>
+
+    <!-- フレンド追加 -->
+    
+    <div class="section friend-list-section">
+        <h3>フレンド追加</h3>
+        <form method="POST" action="{% url 'add_friend' %}">
+            {% csrf_token %}
+            <label>相手の専用ID</label>
+            <input type="text" name="unique_id" required>
+            <button type="submit">追加</button>
+        </form>
+    </div>
+
+    <!-- フレンド一覧 -->
+    <div class="section">
+        <h3>フレンド一覧</h3>
+
+        {% for f in friends %}
+            <div class="friend-item">
+                {{ f.friend.username }}
+                <a href="{% url 'chat_room' f.friend.id %}">チャットする</a>
+            </div>
+        {% empty %}
+            <p>まだフレンドがいません。</p>
+        {% endfor %}
+    </div>
+
+    <!-- グループ一覧 -->
+    <div class="section">
+        <h3>グループ一覧</h3>
+
+        {% for g in groups %}
+            <div class="group-item">
+                {{ g.name }}
+                <a href="{% url 'chat_room' g.id %}">グループチャットへ</a>
+            </div>
+        {% empty %}
+            <p>まだグループがありません。</p>
+        {% endfor %}
+    </div>
+
+    <!-- グループ作成 -->
+    <div class="section">
+        <h3>グループ作成</h3>
+        <form method="POST" action="{% url 'create_group' %}">
+            {% csrf_token %}
+            <label>グループ名</label>
+            <input type="text" name="group_name" required>
+            <button type="submit">作成</button>
+        </form>
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/js1.js' %}"></script>
+{% endblock %}

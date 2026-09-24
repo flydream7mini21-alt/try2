@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+
+.poll-answer-container {
+    max-width: 700px;
+    margin: 40px auto;
+    padding: 25px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.poll-answer-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    white-space: pre-wrap;
+}
+
+.question-block {
+    margin-bottom: 25px;
+    padding: 15px;
+    background: #f7f7f7;
+    border-radius: 10px;
+}
+
+.question-title {
+    font-size: 18px;
+    font-weight: bold;
+    white-space: pre-wrap;
+}
+
+.choice-item {
+    margin-top: 8px;
+}
+
+.choice-item label {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-height: 46px;
+    padding: 10px 14px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.choice-item label:hover {
+    background: #eef8fc;
+    border-color: #03a9f4;
+}
+
+.choice-item input[type="radio"] {
+    width: 18px;
+    height: 18px;
+    margin: 0 10px 0 0;
+    flex-shrink: 0;
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 12px 0;
+    background: #03a9f4;
+    color: #fff;
+    border-radius: 8px;
+    border: none;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.submit-btn:hover {
+    background: #0288d1;
+}
+
+.poll-answer-container .answer-notice {
+    color: #d00 !important;
+    font-size: 17px;
+    font-weight: bold;
+    margin: 0 0 20px;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+
+<nav class="top-nav">
+    <div class="nav-left">
+        <a href="/n_home/">ホーム</a>
+        <a href="/calendar/">個人カレンダー</a>
+        <a href="{% url 'poll_list_active' poll.group.id %}">進行中の投票</a>
+        <a href="{% url 'poll_list_finished' poll.group.id %}">終了した投票</a>
+    </div>
+    <div class="nav-right">
+        <a href="/logout/">ログアウト</a>
+    </div>
+</nav>
+
+<div class="poll-answer-container">
+    <h2>{{ poll.title }}</h2>
+    <p class="answer-notice">※回答は何回でもできます。もう一度送信すると、前回の回答に上書きされます。</p>
+
+    <form action="{% url 'poll_answer' poll.group.id poll.id %}" method="POST">
+        {% csrf_token %}
+
+        {% for q in questions %}
+            <div class="question-block">
+                <div class="question-title">{{ q.text }}</div>
+
+                {% if q.answer_type == "choice" %}
+                    <!-- ★ 修正済み：q.pollchoice_set.all -->
+                    {% for c in q.pollchoice_set.all %}
+                        <div class="choice-item">
+                            <label>
+                                <input type="radio" name="answer_{{ q.id }}" value="{{ c.id }}" {% if q.existing_answer.choice_id == c.id %}checked{% endif %} required>
+                                {{ c.text }}
+                            </label>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <textarea name="answer_{{ q.id }}" rows="3" style="width:100%; margin-top:10px;" required>{{ q.existing_answer.text }}</textarea>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        <button type="submit" class="submit-btn">回答を送信</button>
+    </form>
+</div>
+
+{% endblock %}

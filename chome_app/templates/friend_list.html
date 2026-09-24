@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/friend_home.css' %}">
+<link rel="stylesheet" href="{% static 'css/friend_list.css' %}">
+<link rel="stylesheet" href="{% static 'css/profile.css' %}">
+<link href="https://fonts.googleapis.com/css2?family=Alex+Brush&display=swap" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+
+<!-- ★ 上部：ID表示＋ジャンプボタン -->
+<div class="top-right-id">
+    ID: {{ user.unique_id }}
+     
+    <a href="{% url 'friend_home' %}#add-friend" class="jump-btn">HOME</a>
+    <a href="{% url 'friend_home' %}#add-friend" class="jump-btn">フレンド追加</a>
+    <a href="{% url 'friend_list' %}" class="jump-btn">フレンド一覧</a>
+    <a href="{% url 'friend_home' %}#group-list" class="jump-btn">グループ一覧</a>
+    <a href="{% url 'friend_home' %}#create-group" class="jump-btn">グループ作成</a>
+    <a href="{% url 'friend_profile' %}" class="jump-btn">プロフィール</a>
+</div>
+
+<h2>フレンド一覧</h2>
+
+<!-- ★ ID検索フォーム -->
+<div class="search-box">
+    <form method="GET" action="">
+        <input type="text" name="q" placeholder="IDで検索" value="{{ request.GET.q }}">
+        <button type="submit">検索</button>
+    </form>
+</div>
+
+<!-- ★ フレンド一覧（専用枠カード表示） -->
+<div class="friend-list-wrapper">
+
+{% if friends %}
+    {% for f in friends %}
+        <div class="friend-card"
+             style="
+                {% if f.friend.profile_bg %}
+                    background-image: url('{{ f.friend.profile_bg.url }}');
+                {% else %}
+                    background-color: #ddd;
+                {% endif %}
+             ">
+
+            {% if f.friend.profile_icon %}
+                <img src="{{ f.friend.profile_icon.url }}" class="friend-icon">
+            {% endif %}
+
+            <div class="friend-info">
+                <div class="friend-name">{{ f.friend.username }}</div>
+
+                {% if f.friend.profile_message %}
+                    <p class="signature {{ f.friend.message_font }}"
+                       style="color: {{ f.friend.message_color }};">
+                        {{ f.friend.profile_message }}
+                    </p>
+                {% endif %}
+            </div>
+
+            <a href="{% url 'chat_room' f.friend.id %}" class="chat-btn">チャットする</a>
+        </div>
+    {% endfor %}
+{% else %}
+    <!-- ★ フレンドがいない時も専用枠を表示 -->
+    <div class="friend-card">
+        <div class="friend-name">フレンドはいません</div>
+        <div class="friend-id">ID検索で追加できます</div>
+    </div>
+{% endif %}
+
+</div>
+
+{% endblock %}

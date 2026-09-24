@@ -1,0 +1,252 @@
+
+/* ★ フレンド一覧を左下に固定配置 */
+.section.friend-list-section {
+    position: absolute;
+    left: 20px;
+    bottom: 20px;
+    width: 250px; /* 必要なら調整 */
+}
+
+/* ★ フレンド一覧の中身を縦並びに整える */
+.friend-item {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+    background: white;
+    padding: 10px;
+    border-radius: 6px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.2);
+}
+.profile-card {
+    width: 90%;
+    height: 180px;
+    border-radius: 25px;
+
+    background-size: 100% 100%;   /* 枠に完全フィット */
+    background-repeat: no-repeat;
+    background-position: center;
+
+    margin: 20px auto;
+    padding: 20px;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+/* 丸型プロフィール画像 */
+.profile-icon {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid white;
+
+    position: absolute;
+    left: 20px;  /* 左にしたいなら left: 20px; */
+    top: 20px;
+}
+
+/* 名前部分 */
+.profile-info {
+    background: rgba(0,0,0,0.45);
+    padding: 10px 15px;
+    border-radius: 12px;
+    color: white;
+}
+
+
+/* 背景画像プレビュー枠 */
+.preview-bg-box {
+    width: 100%;
+    height: 120px;
+    border-radius: 15px;
+    background-color: #eee;
+    margin: 10px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #666;
+    font-size: 13px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* 丸型アイコンプレビュー枠 */
+
+.preview-icon-box {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background-color: #eee;
+    margin: 10px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* 丸型アイコンプレビュー画像 */
+
+.preview-icon {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* 本番プロフィールカード */
+.profile-card {
+    width: 90%;
+    height: 180px;
+    border-radius: 25px;
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    margin: 20px auto;
+    padding: 20px;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+/* 本番丸型アイコン */
+.profile-icon {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid white;
+    position: absolute;
+    right: 20px;
+    top: 20px;
+}
+
+
+/* 左右2カラムレイアウト */
+.profile-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    width: 100%;
+}
+
+/* 左側（アップロードフォーム） */
+.profile-left {
+    width: 45%;
+}
+
+/* 右側（プレビュー枠） */
+.profile-right {
+    width: 45%;
+}
+
+
+
+/* ★ プレビューを横並びにする */
+.preview-row {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 20px; /* 背景とアイコンの間の余白 */
+    margin-top: 20px;
+}
+
+/*text content*/
+.preview-message-area {
+    width: 250px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+
+/* ★ メッセージ全体のボックス（背景つき） */
+.message-box {
+    width: 100%;
+    min-height: 160px;
+    background: linear-gradient(135deg, #2c3e50, #4b79a1); /* 高級感の青系グラデーション */
+    border-radius: 18px;
+    padding: 18px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* ★ メッセージ入力欄（背景枠の中に溶け込む） */
+.message-input {
+    width: 100%;
+    height: 110px;
+    border: none;
+    background: rgba(255,255,255,0.08); /* うっすら白で読みやすく */
+    color: white;
+    font-size: 16px;
+    padding: 10px;
+    border-radius: 10px;
+    resize: none;
+    outline: none;
+}
+
+/* ★ 文字色選択のラベル */
+.message-box label {
+    font-size: 14px;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+/* ★ フォント選択のセレクトボックス */
+.message-box select {
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: none;
+    font-size: 14px;
+}
+
+/* ★ カラーピッカー */
+.message-box input[type="color"] {
+    width: 45px;
+    height: 30px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+}
+
+/* ★ 保存ボタン */
+.message-box button {
+    margin-top: 10px;
+    padding: 8px 14px;
+    background: #3498db;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+
+/*テキスト*/
+.signature {
+  font-family: "Alex Brush", cursive;
+  font-size: 3rem;
+  color: #fff;
+  letter-spacing: .02em;
+  font-variant-ligatures: common-ligatures;
+  text-shadow:
+    0 0 6px rgba(255,215,0,.35),
+    0 2px 1px rgba(0,0,0,.6);
+}
+
+/* Alex Brush */
+.signature.brush {
+  font-family: "Alex Brush", cursive;
+}
+
+/* 標準フォント */
+.signature.normal {
+  font-family: sans-serif;
+}
+
+

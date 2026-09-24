@@ -1,0 +1,71 @@
+/* =========================
+   Reset
+========================= */
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:"Yu Gothic","Meiryo",sans-serif;
+    background:#f6fbfc;
+    overflow:hidden;
+    display:flex;
+    height:100vh;
+}
+
+/* =========================
+   左ナビゲーションバー
+========================= */
+.nav-wrapper{
+    width:360px;
+    height:100vh;
+    overflow:hidden;
+    position:relative;
+    background:rgba(255,255,255,.65);
+    backdrop-filter:blur(20px);
+    border-right:1px solid rgba(255,255,255,.5);
+    box-shadow:5px 0 20px rgba(0,0,0,.08);
+    transition:.45s ease;
+}
+
+.nav-wrapper.hide{
+    transform:translateX(-360px);
+}
+
+/* カルーセルの枠 */
+.circle{
+    position:relative;
+    width:100%;
+    height:100%;
+}
+
+/* =========================
+   左上のメニュー開閉ボタン
+========================= */
+#menuToggle{
+    position:fixed;
+    top:20px;
+    left:20px;
+    width:80px;
+    height:80px;
+    border:none;
+    border-radius:20px;
+    background:linear-gradient(180deg,#18c9b5,#08c4de);
+    color:white;
+    font-size:42px;
+    cursor:pointer;
+    z-index:9999;
+    box-shadow:0 10px 25px rgba(0,0,0,.25);
+    transition:.3s;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:0;
+    line-height:1;
+}
+
+#menuToggle:hover{
+    transform:scale(1.08);
+}

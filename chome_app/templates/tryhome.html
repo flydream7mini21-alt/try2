@@ -1,0 +1,247 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+
+<style>
+
+/* ★ ページ専用のラッパーだけに CSS を適用する ★ */
+/* base.html の body や nav-wrapper を絶対に上書きしない */
+
+.page-wrapper {
+    font-family:"Yu Gothic";
+    color:#333;
+    background-color:#fafcf9;
+
+    background-size:100px 50px;
+    background-image:
+        radial-gradient(circle farthest-side at 100% 150%, transparent 24%, #d8ead7 25%, #d8ead7 28%, transparent 29%, transparent 40%, #d8ead7 41%, #d8ead7 44%, transparent 45%, transparent 56%, #d8ead7 57%, #d8ead7 60%, transparent 60%),
+        radial-gradient(circle farthest-side at 0% 150%, transparent 24%, #d8ead7 25%, #d8ead7 28%, transparent 29%, transparent 40%, #d8ead7 41%, #d8ead7 44%, transparent 45%, transparent 56%, #d8ead7 57%, #d8ead7 60%, transparent 60%),
+        radial-gradient(circle closest-corner at 50% 100%, transparent 48%, #d8ead7 50%, #d8ead7 54%, transparent 56%);
+
+    padding: 40px;
+}
+
+/* 以下はページ専用 CSS（カルーセルに干渉しない） */
+
+header{
+    width:92%;
+    margin:25px auto;
+    height:90px;
+    background:white;
+    border-radius:25px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:0 40px;
+    box-shadow:0 10px 30px rgba(0,0,0,.08);
+}
+
+.logo{
+    font-size:30px;
+    font-weight:bold;
+    color:#4d8266;
+}
+
+nav{
+    display:flex;
+    gap:45px;
+}
+
+nav a{
+    text-decoration:none;
+    color:#555;
+    font-size:18px;
+    transition:.3s;
+}
+
+nav a:hover{
+    color:#5b9d73;
+}
+
+.login{
+    padding:15px 35px;
+    border:none;
+    background:#5b9d73;
+    color:white;
+    border-radius:40px;
+    cursor:pointer;
+    font-size:17px;
+}
+
+.hero{
+    padding:90px 20px;
+    text-align:center;
+}
+
+.mark{
+    font-size:40px;
+    color:#8cb596;
+    margin-bottom:20px;
+}
+
+.hero h1{
+    font-size:60px;
+    font-weight:300;
+    margin-bottom:25px;
+}
+
+.hero p{
+    font-size:24px;
+    color:#666;
+    line-height:2;
+}
+
+.main-btn{
+    display:inline-block;
+    margin-top:45px;
+    padding:18px 60px;
+    background:#6ea786;
+    color:white;
+    border-radius:50px;
+    font-size:20px;
+    text-decoration:none;
+    box-shadow:0 10px 30px rgba(0,0,0,.1);
+}
+
+.cards{
+    width:92%;
+    margin:auto;
+    padding:50px;
+    background:rgba(255,255,255,.6);
+    backdrop-filter:blur(8px);
+    border-radius:30px;
+}
+
+.cards h2{
+    text-align:center;
+    font-size:40px;
+    margin-bottom:50px;
+    font-weight:300;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:40px;
+}
+
+.card{
+    background:white;
+    padding:40px;
+    border-radius:20px;
+    box-shadow:0 8px 25px rgba(0,0,0,.08);
+    text-align:center;
+    transition:.3s;
+}
+
+.card:hover{
+    transform:translateY(-8px);
+}
+
+.icon{
+    font-size:55px;
+    margin-bottom:20px;
+}
+
+.card h3{
+    font-size:26px;
+    margin-bottom:15px;
+}
+
+.card p{
+    font-size:18px;
+    color:#666;
+    line-height:1.8;
+}
+
+footer{
+    margin-top:80px;
+    padding:35px;
+    background:#dceadf;
+    display:flex;
+    justify-content:center;
+    gap:35px;
+    flex-wrap:wrap;
+}
+
+footer a{
+    text-decoration:none;
+    color:#555;
+}
+
+footer p{
+    width:100%;
+    text-align:center;
+    margin-top:20px;
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-wrapper">
+
+<header>
+    <div class="logo">🌊 和み庵</div>
+
+    <nav>
+        <a href="">ホーム</a>
+        <a href="">サービス</a>
+        <a href="">ギャラリー</a>
+        <a href="">お知らせ</a>
+        <a href="">会社概要</a>
+        <a href="">お問い合わせ</a>
+    </nav>
+
+    <button class="login">ログイン</button>
+</header>
+
+<section class="hero">
+    <div class="hero-inner">
+        <div class="mark">❀</div>
+        <h1>伝統と調和する、美しい毎日を。</h1>
+        <p>和の心と現代の豊かさをつなぐ<br>あなたの暮らしに寄り添います。</p>
+        <a class="main-btn">サービスを見る →</a>
+    </div>
+</section>
+
+<section class="cards">
+    <h2>おすすめのサービス</h2>
+
+    <div class="grid">
+        <div class="card">
+            <div class="icon">🍀</div>
+            <h3>和のライフスタイル</h3>
+            <p>暮らしに和を取り入れる提案</p>
+        </div>
+
+        <div class="card">
+            <div class="icon">🎋</div>
+            <h3>伝統工芸ギャラリー</h3>
+            <p>日本の工芸品を紹介</p>
+        </div>
+
+        <div class="card">
+            <div class="icon">🎎</div>
+            <h3>体験イベント</h3>
+            <p>文化を楽しめるイベント</p>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <a href="">ホーム</a>
+    <a href="">サービス</a>
+    <a href="">会社概要</a>
+    <a href="">お問い合わせ</a>
+    <p>©2026 Nagomi</p>
+</footer>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- ★ new3.js は base.html で読み込むのでここでは読み込まない -->
+ <script src="{% static 'js/js1.js' %}"></script>
+{% endblock %}

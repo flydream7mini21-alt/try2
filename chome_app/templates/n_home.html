@@ -1,0 +1,305 @@
+{% extends "base.html" %}
+{% load static %}
+{% load get_item %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/n_home.css' %}">
+<style>
+.right-nav {
+    position: fixed;
+    right: 0;
+    width: 600px;
+    height: auto;
+
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(15px);
+    border-radius: 40px 0 0 40px;
+    box-shadow: -5px 0 20px rgba(0,0,0,0.15);
+
+    display: flex;
+    flex-direction: column;   /* ★ 横並び → 縦並び */
+    justify-content: flex-start;
+    align-items: center;
+    gap: 20px;
+
+    padding: 20px;
+    transition: .45s ease;
+    z-index: 9999;
+}
+
+/* 上：画像専用エリア */
+.nav-icon-area {
+    display: flex;
+    flex-direction: row;     /* 横並び */
+    align-items: center;
+    justify-content: flex-start; /* 左寄せ */
+    gap: 20px;               /* 等間隔 */
+    padding: 10px 0;
+}
+
+
+
+
+.nav-icon-area a img {
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
+    display: block;
+}
+
+/* 下：文字専用エリア */
+.nav-link-area {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: nowrap;
+}
+
+/* ↻ ボタンのサイズをアイコンと揃える */
+.nav-tip {
+    width: 32px;
+    height: 32px;
+    background: white;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    color: #145366;
+    cursor: pointer;
+}
+
+/* 右ナビ画像の強制サイズ統一（最優先） */
+.right-nav .user-icon img {
+    width: 60px !important;
+    height: 60px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    object-position: center !important;
+    display: block !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+}
+
+/* ユーザー情報の横並び設定 */
+.right-nav .user-info {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 15px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.right-nav .user-info li {
+    display: inline-block;
+}
+
+
+
+/* 右ナビ全体の高さ調整 */
+.right-nav {
+    top: 0 !important;
+    height: 100px !important;
+    box-sizing: border-box;
+}
+
+
+
+
+/* 丸囲みの？アイコン */
+.circle-q {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid #000000;
+    color: #000000;
+    font-weight: bold;
+}
+
+/* 左側パネル切り替えボタン */
+.panel-switch-outside {
+    position: fixed;
+    left: 10px;
+    top: 100px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 100001;
+}
+
+.panel-switch-outside button {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+
+
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- ★ 右端ナビ -->
+<div class="right-nav" id="rightNav">
+    <!-- 上：画像専用 -->
+    
+
+    <div class="nav-icon-area">
+        <div class="nav-tip" id="colorBtn">↻</div>
+
+        
+        <a href="{% url 'memo' %}">
+            <img src="{% static 'images/note.png' %}" alt="ログアウト">
+        </a>
+        <a href="https://www.google.com/maps" target="_blank">
+            <img src="{% static 'images/map.png' %}" alt="ログアウト">
+        </a>
+        <a href="{% url 'report' %}">
+            <img src="{% static 'images/report.png' %}" alt="ログアウト">
+        </a>
+        <a href="{% url 'meil' %}">
+            <img src="{% static 'images/mail.png' %}" alt="ログアウト">
+        </a>
+        <a href="{% url 'calendar' %}">
+            <img src="{% static 'images/schedule.png' %}" alt="ログアウト">
+        </a>
+        <a href="{% url 'file_manager' %}">
+            <img src="{% static 'images/folder.png' %}" alt="ログアウト">
+        </a>
+        <a href="{% url 'user_settings' %}">
+            <img src="{% static 'images/gear.png' %}" alt="ログアウト">
+        </a>
+        <a href="{% url 'home' %}">
+            <img src="{% static 'images/logout.png' %}" alt="ログアウト">
+        </a>
+
+        <a href="{% url 'home' %}">
+            <img src="{% static 'images/help.png' %}" alt="ログアウト">
+        </a>
+
+        <a href="{% url 'home' %}">
+            <img src="{% static 'images/more.png' %}" alt="ログアウト">
+        </a>
+
+
+
+    </div>
+
+    <!-- 下：文字専用 -->
+
+    <!--<div class="nav-link-area">
+        <a href="{% url 'user_settings' %}">{{ user.username }}</a>
+        <a href="{% url 'memo' %}">メモ帳</a>
+        <a href="https://fonts.google.com/icons?selected=Material+Symbols+Outlined:map_search:FILL@0;wght@400;GRAD@0;opsz@24&icon.query=MAP&icon.size=24&icon.color=%23e3e3e3">GOO_ico</a>
+        <a href="{% url 'report' %}?mode=create">レポート作成</a>
+        <a href="{% url 'home' %}">ログアウト</a>
+    </div>>-->
+</div
+
+
+<!-- ★ カラーパネル 1番 -->
+<div class="color-panel" id="colorPanel-1">
+    <div class="panel-left-column">
+        <div class="panel-switch">
+            <button data-panel="1">〇</button>
+            <button data-panel="2">〇</button>
+        </div>
+    </div>
+
+    <div class="panel-right-content">
+        <div class="color-circle" data-color="#ff6666"></div>
+        <div class="color-circle" data-color="#66ccff"></div>
+        <div class="tri-color-btn" data-set="red"></div>
+        <div class="tri-color-btn" data-set="blue"></div>
+
+        <!-- パターン画像一覧 -->
+        <div class="pattern-circle" data-img="{% static 'images/newhome_black.png' %}"></div>
+        <div class="pattern-circle" data-img="{% static 'images/newhome_red.png' %}"></div>
+        <div class="pattern-circle" data-img="{% static 'images/newhome_blue.png' %}"></div>
+        <div class="pattern-circle" data-img="{% static 'images/newhome_green.png' %}"></div>
+        <div class="pattern-circle" data-img="{% static 'images/newhome_yellow.png' %}"></div>
+        <div class="pattern-circle" data-img="{% static 'images/newhome_orange.png' %}"></div>
+        <div class="pattern-circle" data-img="{% static 'images/newhome_lightblue.png' %}"></div>
+        <div class="pattern-circle" data-img="{% static 'images/newhome_yellowgreen.png' %}"></div>
+        <div class="pattern-circle" data-img="{% static 'images/newhome_white.png' %}"></div>
+        <div class="pattern-circle" data-img="{% static 'images/jack.png' %}"></div>
+        <div class="pattern-circle" data-img="{% static 'images/jack_color.png' %}"></div>
+        <div class="pattern-circle" data-img="{% static 'images/suisei.png' %}"></div>
+        <div class="pattern-circle" data-img="{% static 'images/nav_1.png' %}"></div>
+        <div class="pattern-circle" data-img="{% static 'images/nav_2.png' %}"></div>
+        <div class="pattern-circle" data-img="{% static 'images/nav_3.png' %}"></div>
+        <div class="pattern-circle" data-img="{% static 'images/nav_4.png' %}"></div>
+        <div class="pattern-circle" data-img="{% static 'images/nav_11.png' %}"></div>
+        <div class="pattern-circle" data-img="{% static 'images/nav_5.png' %}"></div>
+        <div class="pattern-circle" data-img="{% static 'images/nav_6.png' %}"></div>
+        <div class="pattern-circle" data-img="{% static 'images/nav_7.png' %}"></div>
+        <div class="pattern-circle" data-img="{% static 'images/nav_8.png' %}"></div>
+        <div class="pattern-circle" data-img="{% static 'images/nav_9.png' %}"></div>
+        <div class="pattern-circle" data-img="{% static 'images/nav_10.png' %}"></div>
+        <div class="pattern-circle" data-img="{% static 'images/nav_12.png' %}"></div>
+        <div class="pattern-circle" data-img="{% static 'images/nav_14.png' %}"></div>
+        <div class="pattern-circle" data-img="{% static 'images/nav_23.png' %}"></div>
+        <div class="pattern-circle" data-img="{% static 'images/nav_22.png' %}"></div>
+    </div>
+
+    <div class="close-color-panel" id="closeColorPanel-1">×</div>
+</div>
+
+<!-- ★ カラーパネル 2番 -->
+<div class="color-panel" id="colorPanel-2" style="display:none;">
+    <div class="panel-left-column">
+        <div class="panel-switch">
+            <button data-panel="1">〇</button>
+            <button data-panel="2">〇</button>
+        </div>
+    </div>
+
+    <div class="panel-right-content">
+        <div class="pattern-circle" data-img="{% static 'images/nav_12.png' %}"></div>
+        <div class="pattern-circle" data-img="{% static 'images/nav_14.png' %}"></div>
+        <div class="pattern-circle" data-img="{% static 'images/nav_20.png' %}"></div>
+        <div class="pattern-circle" data-img="{% static 'images/nav_26.png' %}"></div>
+        <div class="pattern-circle" data-img="{% static 'images/nav_spring.png' %}"></div>
+        <div class="pattern-circle" data-img="{% static 'images/nav_summer.png' %}"></div>
+        <div class="pattern-circle" data-img="{% static 'images/nav_fail.png' %}"></div>
+        <div class="pattern-circle" data-img="{% static 'images/nav_winter.png' %}"></div>
+        <div class="pattern-circle" data-img="{% static 'images/nav_xmas.png' %}"></div>
+        
+        <div class="pattern-circle" data-img="{% static 'images/nav_xjupiter.png' %}"></div>
+        <div class="pattern-circle" data-img="{% static 'images/nav_xneptune.png' %}"></div>
+        <div class="pattern-circle" data-img="{% static 'images/nav_xwood.png' %}"></div>
+        <div class="pattern-circle" data-img="{% static 'images/nav_xmoon.png' %}"></div>
+
+        <div class="pattern-circle" data-img="{% static 'images/nav_27.png' %}"></div>
+        <div class="pattern-circle" data-img="{% static 'images/nav_n01.png' %}"></div>
+        <div class="pattern-circle" data-img="{% static 'images/kurage.png' %}"></div>
+        <div class="pattern-circle" data-img="{% static 'images/nav_ar.png' %}"></div>
+        <div class="pattern-circle" data-img="{% static 'images/nav_kotikuro.png' %}"></div>
+        <div class="pattern-circle" data-img="{% static 'images/nav_kotisiro.png' %}"></div>
+    </div>
+
+    <div class="close-color-panel" id="closeColorPanel-2">×</div>
+</div>
+
+<h3>ⓘ</h3>
+<h3>？⃝</h3>
+<h3>ⓘ</h3>
+<span class="circle-q">?</span>
+
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/js1.js' %}"></script>
+<script src="{% static 'js/n_home.js' %}"></script>
+{% endblock %}

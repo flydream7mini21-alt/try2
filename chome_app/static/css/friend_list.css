@@ -1,0 +1,144 @@
+/* 検索欄 */
+.search-box {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.search-box input {
+    padding: 8px;
+    width: 200px;
+    border-radius: 6px;
+    border: 1px solid #aaa;
+}
+
+.search-box button {
+    padding: 8px 12px;
+    border-radius: 6px;
+    background: #3498db;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+/* フレンド一覧の中央寄せ */
+.friend-list-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    margin-top: 20px;
+}
+
+/* ★ フレンド専用枠（カード） */
+.friend-card {
+    width: 70%;
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    text-align: center;
+    transition: transform 0.2s ease;
+}
+
+.friend-card:hover {
+    transform: translateY(-4px);
+}
+
+.friend-name {
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 6px;
+}
+
+.friend-id {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 12px;
+}
+
+/* チャットボタン */
+.chat-btn {
+    display: inline-block;
+    padding: 8px 14px;
+    background: #3498db;
+    color: white;
+    border-radius: 6px;
+    text-decoration: none;
+}
+
+.chat-btn:hover {
+    background: #2980b9;
+}
+
+/* フレンドがいないとき */
+.no-friends {
+    text-align: center;
+    font-size: 20px;
+    color: #555;
+    margin-top: 40px;
+}
+
+
+/* ★ フレンド一覧を左下に固定配置 */
+.section.friend-list-section {
+    position: absolute;
+    left: 20px;
+    bottom: 20px;
+    width: 250px; /* 必要なら調整 */
+}
+
+/* ★ フレンド一覧の中身を縦並びに整える */
+.friend-item {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+    background: white;
+    padding: 10px;
+    border-radius: 6px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.2);
+}
+
+.friend-card {
+    width: 90%;
+    height: 140px;
+    border-radius: 20px;
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    margin: 15px auto;
+    padding: 20px;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+/* 丸型プロフィールアイコン */
+.friend-icon {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid white;
+    position: absolute;
+    left: 20px;
+    top: 20px;
+}
+
+.friend-info {
+    background: rgba(0,0,0,0.45);
+    padding: 10px 15px;
+    border-radius: 12px;
+    color: white;
+    margin-left: 100px; /* アイコンの分だけ右にずらす */
+}
+
+.chat-btn {
+    margin-top: 10px;
+    display: inline-block;
+    background: #3498db;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 8px;
+    text-decoration: none;
+}

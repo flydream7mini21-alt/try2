@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>{{ poll.title }}</h2>
+<p>{{ message }}</p>
+
+<a href="{% url 'poll_list_active' poll.group.id %}" class="answer-btn">
+    戻る
+</a>
+{% endblock %}

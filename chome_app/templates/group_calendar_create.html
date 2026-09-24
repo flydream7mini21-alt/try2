@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/calendar.css' %}">
+<style>
+
+/* 全体を中央寄せのカード風に */
+.group-create-container {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 25px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* タイトル中央 */
+.group-create-container h2 {
+    text-align: center;
+    font-size: 26px;
+    margin-bottom: 25px;
+}
+
+/* ラベル */
+.group-create-container label {
+    display: block;
+    margin-top: 15px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+/* 入力欄 */
+.group-create-container input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    margin-top: 6px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 15px;
+}
+
+/* 追加ボタン */
+.add-input-btn {
+    margin-top: 10px;
+    padding: 8px 12px;
+    background: #4caf50;
+    color: #fff;
+    border-radius: 6px;
+    cursor: pointer;
+    border: none;
+    font-size: 14px;
+}
+
+.add-input-btn:hover {
+    background: #43a047;
+}
+
+/* フレンド一覧スクロール */
+.friend-list-box {
+    max-height: 200px;
+    overflow-y: auto;
+    background: #f7f7f7;
+    padding: 10px;
+    border-radius: 8px;
+    margin-top: 10px;
+    border: 1px solid #ddd;
+}
+
+/* フレンド項目 */
+.friend-item {
+    padding: 6px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* 作成ボタン */
+.create-btn {
+    width: 100%;
+    margin-top: 25px;
+    padding: 12px 0;
+    background: #03a9f4;
+    color: #fff;
+    border-radius: 8px;
+    border: none;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.create-btn:hover {
+    background: #0288d1;
+}
+
+/* 戻るリンク */
+.back-link {
+    display: block;
+    margin-top: 20px;
+    text-align: center;
+    color: #555;
+    text-decoration: none;
+    font-size: 15px;
+}
+
+.back-link:hover {
+    color: #000;
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+
+<nav class="top-nav">
+    <div class="top-right-id">
+      ID: {{ user.unique_id }}  
+    </div>
+    <div class="nav-left">
+        <a href="/n_home/">ホーム</a>
+    </div>
+
+    <li><a href="{% url 'group_list' %}">グループ一覧</a></li>
+    <li><a href="{% url 'group_calendar_create' %}">グループカレンダー作成</a></li>
+
+    <div class="nav-right">
+        <a href="/logout/">ログアウト</a>
+    </div>
+</nav>
+
+<div class="group-create-container">
+    <h2>グループ作成</h2>
+
+    <form action="{% url 'group_calendar_create' %}" method="POST">
+        {% csrf_token %}
+
+        <label>グループ名</label>
+        <input type="text" name="group_name" placeholder="グループ名を入力" required>
+
+        <label>メンバー追加（ユーザーID）</label>
+
+        <!-- 入力欄を増やす領域 -->
+        <div id="member-input-area">
+            <div class="input-wrapper" style="display:flex; align-items:center; gap:10px; margin-top:6px;">
+                <input type="text" name="member_ids[]" placeholder="ユーザーID"
+                       style="padding:10px; border-radius:8px; border:1px solid #ccc; width:100%;">
+            </div>
+        </div>
+
+        <!-- 追加ボタン -->
+        <button type="button" class="add-input-btn" onclick="addMemberInput()">＋ 入力欄を追加</button>
+
+        <p style="margin-top:10px; font-weight:bold;">フレンドから選択して追加</p>
+
+        <div class="friend-list-box">
+            {% for f in friends %}
+                <div class="friend-item">
+                    <input type="checkbox" name="friend_ids" value="{{ f.friend.id }}">
+                    {{ f.friend.username }} (ID: {{ f.friend.unique_id }})
+                </div>
+            {% empty %}
+                <p>フレンドがいません。</p>
+            {% endfor %}
+        </div>
+
+        <button type="submit" class="create-btn">作成</button>
+    </form>
+
+    <a href="{% url 'group_list' %}" class="back-link">← グループ一覧へ戻る</a>
+</div>
+
+<script>
+/* 入力欄を追加する処理（削除ボタン付き） */
+function addMemberInput() {
+    const area = document.getElementById("member-input-area");
+
+    // wrapper（入力欄＋削除ボタン）
+    const wrapper = document.createElement("div");
+    wrapper.className = "input-wrapper";
+    wrapper.style.display = "flex";
+    wrapper.style.alignItems = "center";
+    wrapper.style.gap = "10px";
+    wrapper.style.marginTop = "6px";
+
+    // 入力欄
+    const input = document.createElement("input");
+    input.type = "text";
+    input.name = "member_ids[]";
+    input.placeholder = "ユーザーID";
+    input.style.padding = "10px";
+    input.style.borderRadius = "8px";
+    input.style.border = "1px solid #ccc";
+    input.style.width = "100%";
+
+    // 削除ボタン（−）
+    const removeBtn = document.createElement("button");
+    removeBtn.type = "button";
+    removeBtn.textContent = "−";
+    removeBtn.style.padding = "8px 12px";
+    removeBtn.style.background = "#d9534f";
+    removeBtn.style.color = "#fff";
+    removeBtn.style.border = "none";
+    removeBtn.style.borderRadius = "6px";
+    removeBtn.style.cursor = "pointer";
+    removeBtn.style.fontSize = "16px";
+
+    // 削除処理
+    removeBtn.onclick = () => {
+        area.removeChild(wrapper);
+    };
+
+    // wrapper に追加
+    wrapper.appendChild(input);
+    wrapper.appendChild(removeBtn);
+
+    // 全体に追加
+    area.appendChild(wrapper);
+}
+</script>
+
+{% endblock %}

@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+
+.poll-list-container {
+    max-width: 700px;
+    margin: 40px auto;
+    padding: 25px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.poll-list-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.poll-item {
+    background: #f7f7f7;
+    padding: 16px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.poll-title {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.poll-period {
+    margin-top: 6px;
+    font-size: 14px;
+    color: #555;
+}
+
+.result-btn {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 8px 14px;
+    background: #9c27b0;
+    color: #fff;
+    border-radius: 6px;
+    text-decoration: none;
+}
+
+.result-btn:hover {
+    background: #7b1fa2;
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+
+<nav class="top-nav">
+    <div class="nav-left">
+        <a href="/n_home/">ホーム</a>
+        <a href="/calendar/">個人カレンダー</a>
+        <a href="{% url 'poll_create' group.id %}">投票作成</a>
+        <a href="{% url 'poll_list_active' group.id %}">進行中の投票</a>
+    </div>
+    <div class="nav-right">
+        <a href="/logout/">ログアウト</a>
+    </div>
+</nav>
+
+<div class="poll-list-container">
+    <h2>終了した投票</h2>
+
+    {% if polls %}
+        {% for p in polls %}
+            <div class="poll-item">
+                <div class="poll-title">{{ p.title }}</div>
+
+                <div class="poll-period">
+                    開始: {{ p.start_at }}  
+                    <br>
+                    終了: {{ p.end_at }}
+                </div>
+
+                <a href="{% url 'poll_result' p.id %}" class="result-btn">結果を見る</a>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p style="text-align:center;">終了した投票はありません。</p>
+    {% endif %}
+</div>
+
+{% endblock %}

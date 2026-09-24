@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/friend_home.css' %}">
+<link rel="stylesheet" href="{% static 'css/friend_request.css' %}">
+{% endblock %}
+{% block content %}
+  <div class="top-right-id">
+        ID: {{ user.unique_id }}
+        <a href="{% url 'friend_home' %}#add-friend" class="jump-btn">HOME</a>
+        <a href="{% url 'friend_request' %}" class="jump-btn">フレンド追加</a>
+        <a href="{% url 'friend_list' %}" class="jump-btn">フレンド一覧</a>
+        <a href="#group-list" class="jump-btn">グループ一覧</a>
+        <a href="{% url 'group_create' %}" class="jump-btn">グループ作成</a> 
+        <a href="{% url 'friend_profile' %}" class="jump-btn">プロフィール</a> 
+        
+       
+    </div>
+<h2>フレンド申請</h2>
+
+<!-- ★ フレンド申請送信フォーム -->
+<form method="POST" action="{% url 'send_friend_request' %}">
+    {% csrf_token %}
+    <input type="text" name="unique_id" placeholder="専用IDを入力">
+    <button type="submit">フレンド申請を送る</button>
+</form>
+
+<hr>
+
+<!-- ★ 届いたフレンド申請一覧 -->
+<h3>届いたフレンド申請</h3>
+
+{% for req in received_requests %}
+    <div class="request-item">
+        {{ req.sender.username }} からの申請
+        <a href="{% url 'accept_friend_request' req.id %}">承認</a>
+    </div>
+{% empty %}
+    <p>申請はありません。</p>
+{% endfor %}
+
+<hr>
+
+<!-- ★ 自分が送った申請一覧（オプション） -->
+<h3>送信済み申請</h3>
+
+{% for req in sent_requests %}
+    <div class="request-item">
+        {{ req.receiver.username }} に申請済み
+    </div>
+{% empty %}
+    <p>送信済み申請はありません。</p>
+{% endfor %}
+
+{% endblock %}
